@@ -3,141 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>*** SACHEM CLASS OF 2006 REUNION ***</title>
+    <title>~*~ SACHEM CLASS OF 2006 REUNION HQ ~*~</title>
     <style>
-        /* THE GEOCITIES AESTHETIC */
+        /* 2006 MYSPACE X GEOCITIES VIBE */
         body {
-            background-color: #000066; /* Deep 90s Blue */
-            background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); /* Tiled Stars */
-            color: #00FF00; /* Neon Matrix Green */
-            font-family: "Comic Sans MS", "Chalkboard SE", cursive;
-            text-align: center;
+            background-color: #000;
+            /* Retro Starfield Background */
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            color: #fff;
+            font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+            margin: 0;
             padding: 20px;
+            cursor: url('https://cur.cursors-4u.net/symbols/sym-1/sym49.cur'), auto; /* Sparkle Cursor */
         }
 
-        .main-table {
-            width: 90%;
-            max-width: 800px;
+        .container {
+            width: 95%;
+            max-width: 900px;
             margin: 0 auto;
-            border: 5px ridge #00CCFF;
-            background-color: rgba(0, 0, 0, 0.8);
+            border: 8px double #ff00ff; /* Neon Pink Border */
+            background: rgba(0, 0, 0, 0.85);
             padding: 20px;
+            box-shadow: 0 0 20px #00ffff;
         }
 
         h1 {
-            color: #FF00FF; /* Hot Pink */
-            text-shadow: 2px 2px #FFFF00;
-            font-size: 3rem;
-            margin-bottom: 10px;
+            color: #00ff00;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 0;
+            filter: drop-shadow(2px 2px #ff00ff);
         }
 
-        /* CORNY MOVING TEXT (THE MARQUEE) */
-        .marquee {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            background: #FFFF00;
-            color: #FF0000;
+        .marquee-container {
+            background: #ff00ff;
+            color: #000;
             font-weight: bold;
-            padding: 10px 0;
-            margin: 20px 0;
-            border-top: 2px solid #FF0000;
-            border-bottom: 2px solid #FF0000;
-        }
-        .marquee span {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marquee 15s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
+            padding: 5px;
+            margin: 15px 0;
+            border: 2px solid #fff;
         }
 
-        /* THE CLASSIC BLINK TAG */
-        .blink {
-            animation: blinker 1s linear infinite;
-            color: #FF0000;
-            font-weight: bold;
+        /* LEGIT SCROLLING TEXT */
+        marquee { font-size: 1.2rem; }
+
+        .blink { animation: blinker 0.8s linear infinite; color: #ffff00; font-weight: bold; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .box {
+            border: 3px inset #00ffff;
+            padding: 15px;
+            background: #111;
+        }
+
+        .countdown-box {
             font-size: 1.5rem;
-        }
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
-
-        .info-box {
-            border: 3px dashed #00FF00;
-            padding: 20px;
-            margin: 20px 0;
-            font-size: 1.2rem;
-        }
-
-        .drift-logo {
-            border: 5px solid white;
+            color: #ff0000;
+            background: #fff;
             padding: 10px;
-            background: white;
-            color: black;
-            display: inline-block;
-            transform: rotate(-2deg);
-            margin-top: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
         }
 
-        /* VISITOR COUNTER STYLING */
-        .counter {
-            font-family: 'Courier New', Courier, monospace;
+        .drift-82 {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            padding: 20px;
+            color: #000;
+            font-weight: bold;
+            border-radius: 50% 20% / 10% 40%; /* Wonky 2000s shape */
+            display: inline-block;
+            margin: 20px 0;
+        }
+
+        /* GUESTBOOK SECTION */
+        .guestbook {
+            margin-top: 40px;
+            border-top: 5px ridge #00ff00;
+            padding-top: 20px;
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            font-family: "Comic Sans MS";
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 4px outset #fff;
+        }
+
+        button:active { border-style: inset; }
+
+        .music-player {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
             background: #333;
-            color: #00FF00;
-            padding: 5px 10px;
-            border: 2px inset #999;
-            display: inline-block;
-            margin-top: 20px;
-        }
-
-        footer {
-            margin-top: 50px;
-            font-size: 0.8rem;
+            padding: 10px;
+            border: 2px solid #fff;
+            font-size: 0.7rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="main-table">
-        <p class="blink">*** NEW UPDATE! ***</p>
+    <div class="container">
+        <p class="blink">!!! YOU ARE VISITOR #00002006 !!!</p>
         
-        <h1>Sachem High School</h1>
-        <h2 style="color: #00CCFF;">Class of 2006: 20-Year Reunion</h2>
+        <h1>SACHEM '06</h1>
+        <p style="color: #00ffff; font-size: 1.5rem;">20-Year Reunion Landing Page</p>
 
-        <div class="marquee">
-            <span>GO ARROWS! -- AUGUST 2026 -- DRIFT 82 -- SEE YOU THERE! -- REMEMBER THE 2000s? -- TICKET INFO COMING SOON! -- GO ARROWS!</span>
+        <div class="marquee-container">
+            <marquee scrollamount="10">CLASS OF 2006 REUNION IS HAPPENING!!! AUGUST 2026 @ DRIFT 82 --- BRING YOUR YEARBOOKS --- DON'T FORGET THE MEMORIES --- GO ARROWS! --- CLASS OF 2006 REUNION IS HAPPENING!!!</marquee>
         </div>
 
-        <div class="info-box">
-            <p>Can you believe it's been 20 years?!</p>
-            <p>Join your fellow graduates for a night of nostalgia, memories, and fun at the beautiful waterfront.</p>
-            
-            <div class="drift-logo">
-                <strong>LOCATION: DRIFT 82</strong><br>
-                Patchogue, NY
+        <div class="countdown-box" id="countdown">
+            LOADING COUNTDOWN TO AUGUST 2026...
+        </div>
+
+        <div class="drift-82">
+            LOCATION: DRIFT 82 (PATCHOGUE)<br>
+            AUGUST 2026 - TBD
+        </div>
+
+        <div class="info-grid">
+            <div class="box">
+                <h3 style="color: #ffff00;">REUNION NEWS</h3>
+                <p>Wait, has it really been 20 years since graduation? We are heading to Patchogue for the 20th reunion. Details are being finalized by the committee!</p>
+                <img src="https://web.archive.org/web/20090830062402im_/http://geocities.com/Heartland/Plains/1435/construct2.gif" width="100">
             </div>
-
-            <p style="margin-top: 20px;">
-                <strong>DATE:</strong> AUGUST 2026 (Exact date TBD)<br>
-                <strong>TIME:</strong> PARTY O'CLOCK
-            </p>
+            <div class="box">
+                <h3 style="color: #ff00ff;">THROWBACK '06</h3>
+                <ul style="text-align: left; display: inline-block;">
+                    <li>Top Song: "Hips Don't Lie"</li>
+                    <li>Movie: Casino Royale</li>
+                    <li>Tech: Razr Phones & iPods</li>
+                    <li>Status: Living the Dream</li>
+                </ul>
+            </div>
         </div>
 
-        <img src="https://web.archive.org/web/20090830062402im_/http://geocities.com/Heartland/Plains/1435/construct2.gif" alt="Under Construction">
-        <p>This site is currently <i>UNDER CONSTRUCTION</i> by Nicholas Weiss</p>
-
-        <div class="counter">
-            VISITOR #00002006
+        <div class="guestbook">
+            <h2 style="color: #00ff00;">-- SIGN THE GUESTBOOK --</h2>
+            <p>Click below to send a message to the committee or say "I'm coming!"</p>
+            <a href="mailto:nicholas.weiss@example.com?subject=Sachem 06 Guestbook Entry">
+                <button>SIGN GUESTBOOK</button>
+            </a>
         </div>
 
-        <footer>
-            <p>Best viewed in Netscape Navigator 4.0 or Internet Explorer 6.0</p>
-            <p>Created with passion & dial-up vibes.</p>
+        <footer style="margin-top: 40px; border-top: 1px solid #333; padding-top: 10px;">
+            <p>Site created by Nicholas Weiss (Class of '06)</p>
+            <p>Best viewed on a 15-inch CRT monitor at 800x600 resolution.</p>
         </footer>
     </div>
+
+    <div class="music-player">
+        Now Playing: <span style="color: #00ff00;">Panic! At The Disco - I Write Sins Not Tragedies.mp3</span><br>
+        [|||||||||||||      ] 68%
+    </div>
+
+    <script>
+        // COUNTDOWN TIMER TO AUGUST 1, 2026
+        const countdown = () => {
+            const countDate = new Date("August 1, 2026 00:00:00").getTime();
+            const now = new Date().getTime();
+            const gap = countDate - now;
+
+            const second = 1000;
+            const minute = second * 60;
+            const hour = minute * 60;
+            const day = hour * 24;
+
+            const textDay = Math.floor(gap / day);
+            const textHour = Math.floor((gap % day) / hour);
+            const textMinute = Math.floor((gap % hour) / minute);
+            const textSecond = Math.floor((gap % minute) / second);
+
+            document.getElementById("countdown").innerText = 
+                `${textDay}d ${textHour}h ${textMinute}m ${textSecond}s UNTIL REUNION!`;
+        };
+        setInterval(countdown, 1000);
+    </script>
 
 </body>
 </html>
