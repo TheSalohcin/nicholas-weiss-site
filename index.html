@@ -3,75 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nicholas Weiss | Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>*** SACHEM CLASS OF 2006 REUNION ***</title>
     <style>
-        :root {
-            --bg: #ffffff;
-            --text: #111111;
-            --accent: #0070f3;
-            --secondary: #666666;
+        /* THE GEOCITIES AESTHETIC */
+        body {
+            background-color: #000066; /* Deep 90s Blue */
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); /* Tiled Stars */
+            color: #00FF00; /* Neon Matrix Green */
+            font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+            text-align: center;
+            padding: 20px;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text); 
-            line-height: 1.6;
-            padding: 0 20px;
-        }
-        .container { max-width: 800px; margin: 100px auto; }
-        header { margin-bottom: 60px; }
-        h1 { font-size: 3rem; font-weight: 600; letter-spacing: -0.05em; margin-bottom: 10px; }
-        .subtitle { font-size: 1.25rem; color: var(--secondary); font-weight: 300; }
-        
-        section { margin-bottom: 40px; }
-        h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--secondary); margin-bottom: 20px; border-bottom: 1px solid #eaeaea; padding-bottom: 10px; }
-        
-        .links { display: flex; gap: 20px; list-style: none; }
-        .links a { 
-            text-decoration: none; 
-            color: var(--text); 
-            font-weight: 400; 
-            transition: color 0.2s;
-            border-bottom: 1px solid transparent;
-        }
-        .links a:hover { color: var(--accent); border-bottom: 1px solid var(--accent); }
-        
-        p { margin-bottom: 20px; font-size: 1.1rem; max-width: 600px; }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 2.2rem; }
-            .container { margin: 50px auto; }
+        .main-table {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 5px ridge #00CCFF;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+        }
+
+        h1 {
+            color: #FF00FF; /* Hot Pink */
+            text-shadow: 2px 2px #FFFF00;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        /* CORNY MOVING TEXT (THE MARQUEE) */
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            background: #FFFF00;
+            color: #FF0000;
+            font-weight: bold;
+            padding: 10px 0;
+            margin: 20px 0;
+            border-top: 2px solid #FF0000;
+            border-bottom: 2px solid #FF0000;
+        }
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* THE CLASSIC BLINK TAG */
+        .blink {
+            animation: blinker 1s linear infinite;
+            color: #FF0000;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .info-box {
+            border: 3px dashed #00FF00;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .drift-logo {
+            border: 5px solid white;
+            padding: 10px;
+            background: white;
+            color: black;
+            display: inline-block;
+            transform: rotate(-2deg);
+            margin-top: 20px;
+        }
+
+        /* VISITOR COUNTER STYLING */
+        .counter {
+            font-family: 'Courier New', Courier, monospace;
+            background: #333;
+            color: #00FF00;
+            padding: 5px 10px;
+            border: 2px inset #999;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Nicholas Weiss</h1>
-            <p class="subtitle">Personal Portfolio & Professional Profile</p>
-        </header>
+    <div class="main-table">
+        <p class="blink">*** NEW UPDATE! ***</p>
+        
+        <h1>Sachem High School</h1>
+        <h2 style="color: #00CCFF;">Class of 2006: 20-Year Reunion</h2>
 
-        <section id="about">
-            <h2>About</h2>
-            <p>Welcome to my personal site. I am a professional based in [Your City], focused on [Your Industry/Passion]. I created this space to share my work and connect with others.</p>
-        </section>
+        <div class="marquee">
+            <span>GO ARROWS! -- AUGUST 2026 -- DRIFT 82 -- SEE YOU THERE! -- REMEMBER THE 2000s? -- TICKET INFO COMING SOON! -- GO ARROWS!</span>
+        </div>
 
-        <section id="connect">
-            <h2>Connect</h2>
-            <ul class="links">
-                <li><a href="mailto:your-email@example.com">Email</a></li>
-                <li><a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a></li>
-                <li><a href="https://twitter.com/yourprofile" target="_blank">Twitter</a></li>
-            </ul>
-        </section>
+        <div class="info-box">
+            <p>Can you believe it's been 20 years?!</p>
+            <p>Join your fellow graduates for a night of nostalgia, memories, and fun at the beautiful waterfront.</p>
+            
+            <div class="drift-logo">
+                <strong>LOCATION: DRIFT 82</strong><br>
+                Patchogue, NY
+            </div>
 
-        <footer style="margin-top: 100px; font-size: 0.8rem; color: var(--secondary);">
-            &copy; 2026 Nicholas Weiss. Built with clean code.
+            <p style="margin-top: 20px;">
+                <strong>DATE:</strong> AUGUST 2026 (Exact date TBD)<br>
+                <strong>TIME:</strong> PARTY O'CLOCK
+            </p>
+        </div>
+
+        <img src="https://web.archive.org/web/20090830062402im_/http://geocities.com/Heartland/Plains/1435/construct2.gif" alt="Under Construction">
+        <p>This site is currently <i>UNDER CONSTRUCTION</i> by Nicholas Weiss</p>
+
+        <div class="counter">
+            VISITOR #00002006
+        </div>
+
+        <footer>
+            <p>Best viewed in Netscape Navigator 4.0 or Internet Explorer 6.0</p>
+            <p>Created with passion & dial-up vibes.</p>
         </footer>
     </div>
 
