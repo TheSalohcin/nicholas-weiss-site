@@ -14,7 +14,7 @@
         #photo-container {
             margin: 20px auto;
             width: 300px;
-            height: 450px; /* Adjust based on your crop ratio */
+            height: 450px; 
             background-color: #ccc;
             border: 8px solid #fff;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -26,13 +26,13 @@
         #random-photo {
             max-width: 100%;
             max-height: 100%;
-            display: none; /* Hidden until button is clicked */
+            display: none; 
         }
         button {
             padding: 15px 30px;
             font-size: 18px;
             font-weight: bold;
-            background-color: #ffcc00; /* Sachem Colors? Update if needed! */
+            background-color: #ffcc00; 
             color: #333;
             border: none;
             border-radius: 5px;
@@ -52,7 +52,7 @@
 </head>
 <body>
 
-    <h1>Sachem Class of 2006 Randomizer</h1>
+    <h1>Sachem Class of 2006</h1>
     <p>Click the button to remember a face!</p>
 
     <div id="photo-container">
@@ -65,32 +65,141 @@
     <button onclick="pickRandomFace()">Roll the Dice!</button>
 
     <script>
-        // PASTE YOUR COLAB OUTPUT HERE! 
-        // Example:
-        const sachemFaces = [
-          'Lauren_Du_Jat_42.jpg',
-          'Matthew_Duffy_43.jpg',
-          // ... all your other files
+        // --- PASTE YOUR 100 FILENAMES BELOW THIS LINE ---
+  'JohnathanBenson_582.jpg',
+  'JohnContinoJr_79.jpg',
+  'JohnContinoJr_81.jpg',
+  'JohnCornell_74.jpg',
+  'JohnDanicllo_219.jpg',
+  'JohnDreyhaupt_371.jpg',
+  'JohnGlass_317.jpg',
+  'JohnKresse_197.jpg',
+  'JohnKuntz_207.jpg',
+  'JohnKuntz_WilliamLambettson_PatrickKuster_194.jpg',
+  'JohnLazzaro_121.jpg',
+  'JohnMichadlMcGuire_498.jpg',
+  'JohnMSacco_42.jpg',
+  'JohnPManninoJr_496.jpg',
+  'JohnSantaricll_48.jpg',
+  'JohnWocdsJr_126.jpg',
+  'JonathanCruz_238.jpg',
+  'JonatlraunlR_HFoley_289.jpg',
+  'JonatlraunlR_HFoley_293.jpg',
+  'JosephCrisci_225.jpg',
+  'JosephCucuzzo_234.jpg',
+  'JosephDAndrea_242.jpg',
+  'JosephDAndrea_249.jpg',
+  'JosephGershonowitz_301.jpg',
+  'JosephGershonowitz_305.jpg',
+  'JosephMalloy_485.jpg',
+  'JosephMaroIV_20.jpg',
+  'JosephMBiondolillo_595.jpg',
+  'JosephMBiondolillo_602.jpg',
+  'JosephMBiondolillo_LaurenBivona_ParvaBhatt_590.jpg',
+  'JosephSolomito_540.jpg',
+  'JosephStiefer_536.jpg',
+  'Jsawph__NDinnigan_111.jpg',
+  'JuliannaMaringelli_513.jpg',
+  'JuliannaMaringelli_Caillyn_Marino_503.jpg',
+  'Julianne_1ovpes_414.jpg',
+  'JustineDillon_239.jpg',
+  'KaileyRuszkowski_43.jpg',
+  'Kaitlyn_Davie_109.jpg',
+  'KaitlynHickcy_407.jpg',
+  'KaitlynHickcy_408.jpg',
+  'KaitlynMcKenna_500.jpg',
+  'KaitlynMcNulty_506.jpg',
+  'KaitlynSusanBarrett_472.jpg',
+  'Kalic_Kanakos_206.jpg',
+  'KandiceBrucella_282.jpg',
+  'KandiceBrucella_287.jpg',
+  'KarlKruisiek_196.jpg',
+  'KarnAucr_482.jpg',
+  'KateAnsman_586.jpg',
+  'KathrynABurbige_261.jpg',
+  'KathrynCarroll_358.jpg',
+  'KathrynFuller_320.jpg',
+  'KatieMclntosh_1.jpg',
+  'KavlaThide_551.jpg',
+  'Keith1Almonaitis_456.jpg',
+  'KeithFrazier_400.jpg',
+  'KelliamneBuauky_264.jpg',
+  'KelliAnnMcNichols_11.jpg',
+  'KelliAnnMcNichols_ShaneMcManus_KerriMcLinden_9.jpg',
+  'KellyConran_360.jpg',
+  'KellyConran_367.jpg',
+  'KellyCusick_237.jpg',
+  'KellyDenimarck_224.jpg',
+  'KellyMarieGlynn_322.jpg',
+  'KellyMarieGlynn_327.jpg',
+  'KerileeCrennan_217.jpg',
+  'KerriMcLinden_10.jpg',
+  'KevimnBrowm_275.jpg',
+  'KevimnBrowm_278.jpg',
+  'KevinWilson_124.jpg',
+  'KimberleighBoucher_120.jpg',
+  'KimberlyCisck_344.jpg',
+  'KimberlyFarge_378.jpg',
+  'KimberlyKiriakos_429.jpg',
+  'KimberlyTaliercio_169.jpg',
+  'King_Elizabeth_419.jpg',
+  'KorinneKirsehberg_185.jpg',
+  'KorinneKirsehberg_CoryKindelmann_JackieKin_192.jpg',
+  'KrislaScalia_66.jpg',
+  'Krista_Louise_Jensen_436.jpg',
+  'KristaMarieSullivan_545.jpg',
+  'KristaShelton_68.jpg',
+  'Kristen_Capece_337.jpg',
+  'Kristen_DAquila_246.jpg',
+  'KristenATUTeslito_489.jpg',
+  'KristenBchski_258.jpg',
+  'KristenGlover_323.jpg',
+  'KristenGlover_KellyMarieGlynn_StcphanieGolden_318.jpg',
+  'KristenKorb_437.jpg',
+  'KristenMalloy_488.jpg',
+  'KristinaBcale_477.jpg',
+  'KristopherBayle_573.jpg',
+  'KrystenFarriella_375.jpg',
+  'KrystinaAsbell_592.jpg',
+  'KuntZinuermann_114.jpg',
+  'Kyle_Horning_418.jpg',
+  'LanitaClarke_352.jpg',
+  'LaunYeleBuii_599.jpg',
+  'LauraGioglio_313.jpg',
+  'LaurenAlonzo_465.jpg',
+  'LaurenAnnonio_581.jpg',
+  'LaurenAnnonio_588.jpg',
+  'LaurenBecker_575.jpg',
+  'LaurenBecker_578.jpg',
+  'LaurenBivona_597.jpg',
+  'LaurenBivona_601.jpg',
+  'LaurenDuJat_372.jpg',
+  'LaurenMaricBarry_470.jpg',
+  'LaurenShaw_138.jpg',
+  'LaurenSorbera_146.jpg',
+  'Leanna_MariaBader_598.jpg',
+  'Leanna_MariaBader_600.jpg',
+  'Leanna_MariaBader_603.jpg',
+  'LeannaDcPaola_88.jpg',
+  'Linda_Sleezer_159.jpg',
+
         ];
+        // --- PASTE YOUR 100 FILENAMES ABOVE THIS LINE ---
 
         function pickRandomFace() {
-            // Pick a random number between 0 and the total number of photos
             const randomIndex = Math.floor(Math.random() * sachemFaces.length);
             const selectedFile = sachemFaces[randomIndex];
 
-            // Update the image source (assuming your images are in an 'images' folder)
             const imgElement = document.getElementById('random-photo');
-            imgElement.src = 'images/' + selectedFile;
+            // This points to the images folder on your Vercel site
+            imgElement.src = '/images/' + selectedFile;
             imgElement.style.display = 'block';
 
-            // Hide the placeholder text
             document.getElementById('placeholder-text').style.display = 'none';
 
-            // Optional: Format the filename back into a readable name for the label below
-            // This turns "Matthew_Duffy_43.jpg" into "Matthew Duffy"
             let readableName = selectedFile.split('.')[0]; 
-            readableName = readableName.replace(/_[0-9]+$/, ''); // Remove the trailing number
-            readableName = readableName.replace(/_/g, ' '); // Replace underscores with spaces
+            readableName = readableName.replace(/_[0-9]+$/, ''); 
+            readableName = readableName.replace(/_/g, ' '); 
             
             document.getElementById('name-label').innerText = readableName;
         }
