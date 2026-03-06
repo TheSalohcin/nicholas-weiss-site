@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sachem 2006 Randomizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            padding: 50px;
+        }
+        #photo-container {
+            margin: 20px auto;
+            width: 300px;
+            height: 450px; /* Adjust based on your crop ratio */
+            background-color: #ccc;
+            border: 8px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #random-photo {
+            max-width: 100%;
+            max-height: 100%;
+            display: none; /* Hidden until button is clicked */
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #ffcc00; /* Sachem Colors? Update if needed! */
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #e6b800;
+        }
+        #name-label {
+            margin-top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sachem Class of 2006 Randomizer</h1>
+    <p>Click the button to remember a face!</p>
+
+    <div id="photo-container">
+        <span id="placeholder-text">Who will it be?</span>
+        <img id="random-photo" src="" alt="Random Classmate">
+    </div>
+    
+    <div id="name-label"></div><br>
+
+    <button onclick="pickRandomFace()">Roll the Dice!</button>
+
+    <script>
+        // PASTE YOUR COLAB OUTPUT HERE! 
+        // Example:
+        const sachemFaces = [
+          'Lauren_Du_Jat_42.jpg',
+          'Matthew_Duffy_43.jpg',
+          // ... all your other files
+        ];
+
+        function pickRandomFace() {
+            // Pick a random number between 0 and the total number of photos
+            const randomIndex = Math.floor(Math.random() * sachemFaces.length);
+            const selectedFile = sachemFaces[randomIndex];
+
+            // Update the image source (assuming your images are in an 'images' folder)
+            const imgElement = document.getElementById('random-photo');
+            imgElement.src = 'images/' + selectedFile;
+            imgElement.style.display = 'block';
+
+            // Hide the placeholder text
+            document.getElementById('placeholder-text').style.display = 'none';
+
+            // Optional: Format the filename back into a readable name for the label below
+            // This turns "Matthew_Duffy_43.jpg" into "Matthew Duffy"
+            let readableName = selectedFile.split('.')[0]; 
+            readableName = readableName.replace(/_[0-9]+$/, ''); // Remove the trailing number
+            readableName = readableName.replace(/_/g, ' '); // Replace underscores with spaces
+            
+            document.getElementById('name-label').innerText = readableName;
+        }
+    </script>
+
+</body>
+</html>
