@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Check-in">
+<meta name="theme-color" content="#11151b">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2311151b'/%3E%3Cpath d='M8 17l5 5 11-12' stroke='%23d9ae3e' stroke-width='3.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Reunion check-in</title><style>
+:root{
+  --ink:#11151b; --surface:#1a212b; --surface2:#222b38; --line:#2f3a49;
+  --cream:#f2ece0; --mute:#93a1b4;
+  --gold:#d9ae3e; --red:#d4483c; --slate:#8aa2c8; --here:#54a374;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--ink);color:var(--cream);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:620px;margin:0 auto;padding:18px 16px 96px}
+.eyebrow{font-family:Georgia,"Times New Roman",serif;font-style:italic;
+  font-size:13px;color:var(--gold);letter-spacing:.02em;margin:0 0 2px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0 0 12px}
+.tally{display:flex;align-items:baseline;gap:10px;font-size:14px;color:var(--mute);margin-bottom:8px}
+.tally b{font-size:30px;font-weight:800;color:var(--cream);letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums}
+.bar{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--here);transition:width .28s ease}
+.controls{position:sticky;top:0;z-index:5;background:var(--ink);padding:14px 0 10px;margin-top:14px}
+input[type=search]{width:100%;padding:14px;font-size:17px;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);color:var(--cream);
+  -webkit-appearance:none;appearance:none}
+input[type=search]::placeholder{color:#6d7c90}
+input[type=search]:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:transparent}
+.tabs{display:flex;gap:8px;margin-top:10px}
+.tab{flex:1;padding:9px 6px;font-size:13px;font-weight:700;border-radius:9px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface);color:var(--mute);text-align:center;
+  font-family:inherit}
+.tab[aria-selected=true]{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+.tab:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+ul{list-style:none;margin:10px 0 0;padding:0}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line);
+  border-radius:12px;padding:12px;margin-bottom:8px;min-height:62px;color:inherit;font:inherit}
+.row:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.row.gold{border-left-color:var(--gold)} .row.red{border-left-color:var(--red)}
+.row.navy{border-left-color:var(--slate)}
+.row.on{background:#16241c;border-color:#2c4735;border-left-color:var(--here)}
+.row.on .nm{color:var(--here)}
+.tick{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);
+  display:grid;place-items:center;font-size:15px;font-weight:800;color:transparent}
+.row.on .tick{background:var(--here);border-color:var(--here);color:#0e1a12}
+.who{flex:1;min-width:0}
+.nm{font-size:16px;font-weight:800;letter-spacing:.01em;text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{font-size:12.5px;color:var(--mute);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta em{font-family:Georgia,serif;font-style:italic;color:#a9b6c8}
+.loc{flex:none;display:flex;align-items:center;gap:7px}
+.loc .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;
+  color:var(--mute);text-align:right;line-height:1.32;letter-spacing:-.02em}
+.loc .mono b{display:block;color:var(--cream);font-size:12px;letter-spacing:-.01em}
+.loc .mono i{display:block;font-style:normal;color:#7d8da0}
+svg.grid{display:block}
+.empty{text-align:center;color:var(--mute);padding:34px 16px;font-size:15px;line-height:1.5}
+.empty b{color:var(--cream);display:block;margin-bottom:4px;font-size:16px}
+footer{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;
+  font-size:13px;color:var(--mute);line-height:1.6}
+footer h2{font-family:Georgia,serif;font-style:italic;font-weight:400;
+  font-size:14px;color:var(--gold);margin:0 0 6px}
+.mini{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--cream)}
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{padding:10px 14px;font-size:13px;font-weight:700;border-radius:9px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface);color:var(--cream);font-family:inherit}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn.warn{color:var(--red);border-color:#4a2a27}
+.note{margin-top:12px;padding:10px 12px;border-radius:9px;background:#2a2418;
+  border:1px solid #4a3f22;color:#e6d5a8;font-size:12.5px;display:none}
+.panel{display:none;margin-top:12px}
+.panel textarea{width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);
+  background:var(--ink);color:var(--cream);font-family:ui-monospace,Menlo,monospace;
+  font-size:12px;min-height:92px}
+.panel p{margin:6px 0 0;font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="wrap">
+  <p class="eyebrow">Sachem High School &middot; Flaming Arrows &middot; Class of 2006</p>
+  <h1>Reunion check-in</h1>
+  <div class="tally"><b id="cHere">0</b> <span>here</span> <span id="cOut"></span></div>
+  <div class="bar"><i id="fill"></i></div>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search name, maiden name, or card number"
+           autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-f="out" aria-selected="true">Still out</button>
+      <button class="tab" role="tab" data-f="all" aria-selected="false">Everyone</button>
+      <button class="tab" role="tab" data-f="in"  aria-selected="false">Here</button>
+    </div>
+  </div>
+
+  <ul id="list"></ul>
+  <div class="note" id="note"></div>
+
+  <footer>
+    <h2>Walk-ins</h2>
+    <div id="blankInfo"></div>
+    <div class="acts">
+      <button class="btn" id="undo">Undo last</button>
+      <button class="btn" id="exp">Export list</button>
+      <button class="btn" id="bak">Backup &amp; restore</button>
+      <button class="btn warn" id="reset">Reset all</button>
+    </div>
+    <div class="panel" id="expPanel"><textarea id="expBox" readonly></textarea></div>
+    <div class="panel" id="bakPanel">
+      <textarea id="bakBox" spellcheck="false"></textarea>
+      <p>Copy this somewhere safe. To move it to another device, paste it back and tap
+         <button class="btn" id="restore" style="padding:5px 10px;font-size:12px">Restore</button></p>
+    </div>
+  </footer>
+</div>
+<script>
+const PEOPLE = [{"n":"001","name":"Jordan VanDina","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-001","word":"ARROWS","sheet":1,"row":1,"col":"L","slot":0},{"n":"002","name":"Nicholas Weiss","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-002","word":"FLAMING","sheet":1,"row":1,"col":"R","slot":1},{"n":"003","name":"Alexander Kiernan","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-003","word":"FLAMING","sheet":1,"row":2,"col":"L","slot":2},{"n":"004","name":"Justine Wilson","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-004","word":"ARROWS","sheet":1,"row":2,"col":"R","slot":3,"plus":"Luka Kosmat"},{"n":"005","name":"Luka Kosmat","yrbk":"","kind":"guest","campus":"navy","host":"Justine Wilson","label":"Guest","code":"ARROWS-005","word":"ARROWS","sheet":1,"row":3,"col":"L","slot":4},{"n":"006","name":"Adam Caronti","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-006","word":"ARROWS","sheet":1,"row":3,"col":"R","slot":5},{"n":"007","name":"Brett Cataldi","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-007","word":"FLAMING","sheet":1,"row":4,"col":"L","slot":6,"plus":"Kristen Cataldi"},{"n":"008","name":"Kristen Cataldi","yrbk":"","kind":"guest","campus":"navy","host":"Brett Cataldi","label":"Guest","code":"ARROWS-008","word":"ARROWS","sheet":1,"row":4,"col":"R","slot":7},{"n":"009","name":"Teresa Devito","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-009","word":"FLAMING","sheet":2,"row":1,"col":"L","slot":0},{"n":"010","name":"David Gerber","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-010","word":"ARROWS","sheet":2,"row":1,"col":"R","slot":1},{"n":"011","name":"Collin Peskett","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-011","word":"ARROWS","sheet":2,"row":2,"col":"L","slot":2},{"n":"012","name":"Jacqueline Oates","yrbk":"Jacqueline Spengler","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-012","word":"FLAMING","sheet":2,"row":2,"col":"R","slot":3},{"n":"013","name":"Jacquelyn Gilde","yrbk":"Jackie Schook","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-013","word":"ARROWS","sheet":2,"row":3,"col":"L","slot":4},{"n":"014","name":"Joseph Gilde","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-014","word":"FLAMING","sheet":2,"row":3,"col":"R","slot":5},{"n":"015","name":"Edward Spillett","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-015","word":"ARROWS","sheet":2,"row":4,"col":"L","slot":6,"plus":"Jessica Spillett"},{"n":"016","name":"Jessica Spillett","yrbk":"","kind":"guest","campus":"navy","host":"Edward Spillett","label":"Guest","code":"FLAMING-016","word":"FLAMING","sheet":2,"row":4,"col":"R","slot":7},{"n":"017","name":"Ryan Schepis","yrbk":"Ryan Smith","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-017","word":"ARROWS","sheet":3,"row":1,"col":"L","slot":0},{"n":"018","name":"Marissa Conforti","yrbk":"Marissa Proietti","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-018","word":"FLAMING","sheet":3,"row":1,"col":"R","slot":1,"plus":"Chris Conforti"},{"n":"019","name":"Chris Conforti","yrbk":"","kind":"guest","campus":"navy","host":"Marissa Conforti","label":"Guest","code":"FLAMING-019","word":"FLAMING","sheet":3,"row":2,"col":"L","slot":2},{"n":"020","name":"Nicholas Graziano","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-020","word":"FLAMING","sheet":3,"row":2,"col":"R","slot":3},{"n":"021","name":"Alison Incarnato","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-021","word":"FLAMING","sheet":3,"row":3,"col":"L","slot":4},{"n":"022","name":"Lince Varughese","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-022","word":"FLAMING","sheet":3,"row":3,"col":"R","slot":5,"plus":"Joice Varughese"},{"n":"023","name":"Joice Varughese","yrbk":"","kind":"guest","campus":"navy","host":"Lince Varughese","label":"Guest","code":"ARROWS-023","word":"ARROWS","sheet":3,"row":4,"col":"L","slot":6},{"n":"024","name":"Maye Abdella","yrbk":"Maye Khamis","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-024","word":"FLAMING","sheet":3,"row":4,"col":"R","slot":7,"plus":"Ahmad Abdella"},{"n":"025","name":"Ahmad Abdella","yrbk":"","kind":"guest","campus":"navy","host":"Maye Abdella","label":"Guest","code":"ARROWS-025","word":"ARROWS","sheet":4,"row":1,"col":"L","slot":0},{"n":"026","name":"Caitlin Thomson","yrbk":"Caitlin Brady","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-026","word":"ARROWS","sheet":4,"row":1,"col":"R","slot":1},{"n":"027","name":"William Thomson","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-027","word":"ARROWS","sheet":4,"row":2,"col":"L","slot":2},{"n":"028","name":"Julie Lekstutis","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-028","word":"ARROWS","sheet":4,"row":2,"col":"R","slot":3},{"n":"029","name":"Raymond Gerondel","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-029","word":"FLAMING","sheet":4,"row":3,"col":"L","slot":4,"plus":"Tiffany Kistenberg"},{"n":"030","name":"Tiffany Kistenberg","yrbk":"","kind":"guest","campus":"navy","host":"Raymond Gerondel","label":"Guest","code":"FLAMING-030","word":"FLAMING","sheet":4,"row":3,"col":"R","slot":5},{"n":"031","name":"Caitlin Maczkiewicz","yrbk":"Caitlin Gay","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-031","word":"FLAMING","sheet":4,"row":4,"col":"L","slot":6},{"n":"032","name":"David Maczkiewicz","yrbk":"","kind":"hybrid","campus":"navy","host":"","label":"Class of 2007","code":"ARROWS-032","word":"ARROWS","sheet":4,"row":4,"col":"R","slot":7},{"n":"033","name":"Nicole Daley Brunetti","yrbk":"Nicole Daley","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-033","word":"ARROWS","sheet":5,"row":1,"col":"L","slot":0,"plus":"Frank Brunetti"},{"n":"034","name":"Frank Brunetti","yrbk":"","kind":"guest","campus":"navy","host":"Nicole Daley Brunetti","label":"Guest","code":"ARROWS-034","word":"ARROWS","sheet":5,"row":1,"col":"R","slot":1},{"n":"035","name":"Jennifer Brawley","yrbk":"Jennifer Patti","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-035","word":"FLAMING","sheet":5,"row":2,"col":"L","slot":2},{"n":"036","name":"Jesse Brawley","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-036","word":"ARROWS","sheet":5,"row":2,"col":"R","slot":3},{"n":"037","name":"Jackie Maczkiewicz","yrbk":"Jaclyn Maczkiewicz","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-037","word":"FLAMING","sheet":5,"row":3,"col":"L","slot":4},{"n":"038","name":"Nicole Maczkiewicz","yrbk":"","kind":"guest","campus":"navy","host":"","label":"Guest","code":"FLAMING-038","word":"FLAMING","sheet":5,"row":3,"col":"R","slot":5},{"n":"039","name":"Courtney Dalessandro","yrbk":"Courtney D\u2019Alessandro","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-039","word":"FLAMING","sheet":5,"row":4,"col":"L","slot":6},{"n":"040","name":"Jody Rascona","yrbk":"Jody Blomberg","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-040","word":"ARROWS","sheet":5,"row":4,"col":"R","slot":7},{"n":"041","name":"Brittany Rivera","yrbk":"Brittany Vetrone","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-041","word":"FLAMING","sheet":6,"row":1,"col":"L","slot":0},{"n":"042","name":"Lauren Jezo","yrbk":"Lauren Weber","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-042","word":"FLAMING","sheet":6,"row":1,"col":"R","slot":1},{"n":"043","name":"Christina Giampetruzzi","yrbk":"Christina Koehler","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-043","word":"FLAMING","sheet":6,"row":2,"col":"L","slot":2},{"n":"044","name":"Eric Link","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-044","word":"FLAMING","sheet":6,"row":2,"col":"R","slot":3},{"n":"045","name":"Sam Link","yrbk":"Sam Frazier","kind":"hybrid","campus":"navy","host":"","label":"Class of 2007","code":"ARROWS-045","word":"ARROWS","sheet":6,"row":3,"col":"L","slot":4},{"n":"046","name":"Mike O\u2019Brien","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-046","word":"ARROWS","sheet":6,"row":3,"col":"R","slot":5},{"n":"047","name":"Colleen Walsh","yrbk":"Colleen Ryan","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-047","word":"ARROWS","sheet":6,"row":4,"col":"L","slot":6,"plus":"Randy Walsh"},{"n":"048","name":"John Contino","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-048","word":"ARROWS","sheet":6,"row":4,"col":"R","slot":7},{"n":"049","name":"Christine Cracchiolo","yrbk":"Christine Ambrosio","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-049","word":"FLAMING","sheet":7,"row":1,"col":"L","slot":0,"plus":"Joseph Cracchiolo"},{"n":"050","name":"Joseph Cracchiolo","yrbk":"","kind":"guest","campus":"navy","host":"Christine Cracchiolo","label":"Guest","code":"ARROWS-050","word":"ARROWS","sheet":7,"row":1,"col":"R","slot":1},{"n":"051","name":"Ashley Curtis","yrbk":"Ashley Grossman","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-051","word":"ARROWS","sheet":7,"row":2,"col":"L","slot":2,"plus":"John Curtis"},{"n":"052","name":"John Curtis","yrbk":"","kind":"guest","campus":"navy","host":"Ashley Curtis","label":"Guest","code":"FLAMING-052","word":"FLAMING","sheet":7,"row":2,"col":"R","slot":3},{"n":"053","name":"Kelly Dutches","yrbk":"Kelly Lang","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-053","word":"FLAMING","sheet":7,"row":3,"col":"L","slot":4,"plus":"Tom Dutches"},{"n":"054","name":"Tom Dutches","yrbk":"","kind":"guest","campus":"navy","host":"Kelly Dutches","label":"Guest","code":"ARROWS-054","word":"ARROWS","sheet":7,"row":3,"col":"R","slot":5},{"n":"055","name":"Cory Kindelmann","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-055","word":"ARROWS","sheet":7,"row":4,"col":"L","slot":6},{"n":"056","name":"Andrew Nastro","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-056","word":"ARROWS","sheet":7,"row":4,"col":"R","slot":7},{"n":"057","name":"Christopher Yennaris","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-057","word":"FLAMING","sheet":8,"row":1,"col":"L","slot":0},{"n":"058","name":"Karyn Bishop","yrbk":"Karyn Geoghan","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-058","word":"ARROWS","sheet":8,"row":1,"col":"R","slot":1},{"n":"059","name":"Nicole Fusco","yrbk":"Nicole Cunetta","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-059","word":"ARROWS","sheet":8,"row":2,"col":"L","slot":2,"plus":"Paul Fusco"},{"n":"060","name":"Paul Fusco","yrbk":"","kind":"guest","campus":"navy","host":"Nicole Fusco","label":"Guest","code":"ARROWS-060","word":"ARROWS","sheet":8,"row":2,"col":"R","slot":3},{"n":"061","name":"James Fetter","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-061","word":"ARROWS","sheet":8,"row":3,"col":"L","slot":4},{"n":"062","name":"Makis Panousis","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-062","word":"FLAMING","sheet":8,"row":3,"col":"R","slot":5},{"n":"064","name":"Lanita Clarke","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-064","word":"ARROWS","sheet":8,"row":4,"col":"R","slot":7},{"n":"065","name":"Toniann Nigro","yrbk":"Toniann Buckley","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-065","word":"ARROWS","sheet":9,"row":1,"col":"L","slot":0},{"n":"066","name":"Holly Brookfield","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-066","word":"ARROWS","sheet":9,"row":1,"col":"R","slot":1},{"n":"067","name":"Ashley Roland","yrbk":"Ashley Koval","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-067","word":"FLAMING","sheet":9,"row":2,"col":"L","slot":2},{"n":"068","name":"Christopher Roland","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-068","word":"ARROWS","sheet":9,"row":2,"col":"R","slot":3},{"n":"069","name":"Caitlyn Bente","yrbk":"Caitlyn Marino","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-069","word":"FLAMING","sheet":9,"row":3,"col":"L","slot":4},{"n":"070","name":"Chelsea Larsen","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-070","word":"ARROWS","sheet":9,"row":3,"col":"R","slot":5,"plus":"Kamil Graczyk"},{"n":"071","name":"Kamil Graczyk","yrbk":"","kind":"guest","campus":"navy","host":"Chelsea Larsen","label":"Guest","code":"FLAMING-071","word":"FLAMING","sheet":9,"row":4,"col":"L","slot":6},{"n":"072","name":"Nicole Stewart","yrbk":"Nicole Purcell","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-072","word":"FLAMING","sheet":9,"row":4,"col":"R","slot":7},{"n":"073","name":"Taylor Maningo","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-073","word":"ARROWS","sheet":10,"row":1,"col":"L","slot":0},{"n":"074","name":"Raymond Crifasi","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-074","word":"FLAMING","sheet":10,"row":1,"col":"R","slot":1},{"n":"075","name":"Andy Schmutzler","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-075","word":"ARROWS","sheet":10,"row":2,"col":"L","slot":2},{"n":"076","name":"Justin Hagedorn","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-076","word":"FLAMING","sheet":10,"row":2,"col":"R","slot":3,"plus":"Sara Hagedorn"},{"n":"077","name":"Sara Hagedorn","yrbk":"","kind":"guest","campus":"navy","host":"Justin Hagedorn","label":"Guest","code":"FLAMING-077","word":"FLAMING","sheet":10,"row":3,"col":"L","slot":4},{"n":"078","name":"Dave Cohen","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-078","word":"ARROWS","sheet":10,"row":3,"col":"R","slot":5},{"n":"079","name":"Ashley Behrens","yrbk":"Ashley Boyd","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-079","word":"ARROWS","sheet":10,"row":4,"col":"L","slot":6},{"n":"080","name":"Kathryn Carroll","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-080","word":"ARROWS","sheet":10,"row":4,"col":"R","slot":7},{"n":"081","name":"Kevin Ryan","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-081","word":"FLAMING","sheet":11,"row":1,"col":"L","slot":0},{"n":"082","name":"Katie Coffey","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-082","word":"FLAMING","sheet":11,"row":1,"col":"R","slot":1},{"n":"083","name":"Randy Walsh","yrbk":"","kind":"guest","campus":"navy","host":"Colleen Walsh","label":"Guest","code":"ARROWS-083","word":"ARROWS","sheet":11,"row":2,"col":"L","slot":2},{"n":"084","name":"Isabel Rojas","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-084","word":"ARROWS","sheet":11,"row":2,"col":"R","slot":3},{"n":"085","name":"Brendan Daly","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-085","word":"FLAMING","sheet":11,"row":3,"col":"L","slot":4},{"n":"086","name":"Keith Frazier","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-086","word":"FLAMING","sheet":11,"row":3,"col":"R","slot":5},{"n":"087","name":"Robert Jagacki","yrbk":"Robert Jagacki","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-087","word":"ARROWS","sheet":11,"row":4,"col":"L","slot":6},{"n":"088","name":"Darnell Clarke","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-088","word":"ARROWS","sheet":11,"row":4,"col":"R","slot":7},{"n":"089","name":"Emily Jean","yrbk":"Emily Lubicich","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-089","word":"FLAMING","sheet":12,"row":1,"col":"L","slot":0},{"n":"090","name":"Steve Giorlando","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-090","word":"FLAMING","sheet":12,"row":1,"col":"R","slot":1},{"n":"091","name":"Mike Grippo","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-091","word":"FLAMING","sheet":12,"row":2,"col":"L","slot":2},{"n":"092","name":"Michael Chaves","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-092","word":"FLAMING","sheet":12,"row":2,"col":"R","slot":3},{"n":"093","name":"Steve Nickel","yrbk":"Steven Nickel","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-093","word":"ARROWS","sheet":12,"row":3,"col":"L","slot":4,"plus":"Laura Nickel"},{"n":"094","name":"Laura Nickel","yrbk":"","kind":"guest","campus":"navy","host":"Steve Nickel","label":"Guest","code":"FLAMING-094","word":"FLAMING","sheet":12,"row":3,"col":"R","slot":5},{"n":"095","name":"Bridget Ferber","yrbk":"","kind":"guest","campus":"navy","host":"Matt Ferber","label":"Guest","code":"FLAMING-095","word":"FLAMING","sheet":12,"row":4,"col":"L","slot":6},{"n":"096","name":"Matt Ferber","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"ARROWS-096","word":"ARROWS","sheet":12,"row":4,"col":"R","slot":7,"plus":"Bridget Ferber"},{"n":"097","name":"Taylor Grimm","yrbk":"Taylor Spindel","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-097","word":"FLAMING","sheet":13,"row":1,"col":"L","slot":0},{"n":"098","name":"Alexander Grimm","yrbk":"","kind":"hybrid","campus":"navy","host":"","label":"Class of 2005","code":"ARROWS-098","word":"ARROWS","sheet":13,"row":1,"col":"R","slot":1},{"n":"099","name":"Anthony Posa","yrbk":"","kind":"alum","campus":"red","host":"","label":"East Campus","code":"FLAMING-099","word":"FLAMING","sheet":13,"row":2,"col":"L","slot":2,"plus":"Danielle Posa"},{"n":"100","name":"Danielle Posa","yrbk":"","kind":"guest","campus":"navy","host":"Anthony Posa","label":"Guest","code":"FLAMING-100","word":"FLAMING","sheet":13,"row":2,"col":"R","slot":3},{"n":"101","name":"Timothy Budhwa","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-101","word":"ARROWS","sheet":13,"row":3,"col":"L","slot":4,"plus":"Sheliza Budhwa"},{"n":"102","name":"Sheliza Budhwa","yrbk":"","kind":"guest","campus":"navy","host":"Timothy Budhwa","label":"Guest","code":"FLAMING-102","word":"FLAMING","sheet":13,"row":3,"col":"R","slot":5},{"n":"103","name":"Dolly Mathew","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"FLAMING-103","word":"FLAMING","sheet":13,"row":4,"col":"L","slot":6,"plus":"Vivek Varki"},{"n":"104","name":"Vivek Varki","yrbk":"","kind":"guest","campus":"navy","host":"Dolly Mathew","label":"Guest","code":"ARROWS-104","word":"ARROWS","sheet":13,"row":4,"col":"R","slot":7},{"n":"106","name":"James Teta","yrbk":"","kind":"alum","campus":"gold","host":"","label":"North Campus","code":"ARROWS-106","word":"ARROWS","sheet":14,"row":1,"col":"R","slot":1}];
+const BLANKS = [{"n":"063","sheet":8,"row":4,"col":"L","slot":6},{"n":"105","sheet":14,"row":1,"col":"L","slot":0},{"n":"107","sheet":14,"row":2,"col":"L","slot":2},{"n":"108","sheet":14,"row":2,"col":"R","slot":3},{"n":"109","sheet":14,"row":3,"col":"L","slot":4},{"n":"110","sheet":14,"row":3,"col":"R","slot":5},{"n":"111","sheet":14,"row":4,"col":"L","slot":6},{"n":"112","sheet":14,"row":4,"col":"R","slot":7},{"n":"113","sheet":15,"row":1,"col":"L","slot":0},{"n":"114","sheet":15,"row":1,"col":"R","slot":1},{"n":"115","sheet":15,"row":2,"col":"L","slot":2},{"n":"116","sheet":15,"row":2,"col":"R","slot":3},{"n":"117","sheet":15,"row":3,"col":"L","slot":4},{"n":"118","sheet":15,"row":3,"col":"R","slot":5},{"n":"119","sheet":15,"row":4,"col":"L","slot":6},{"n":"120","sheet":15,"row":4,"col":"R","slot":7}];
+const KEY = "reunion-checkin-v1";
+
+const Store = {
+  mode: "memory", mem: null,
+  init(){
+    if (window.storage && typeof window.storage.get === "function") { this.mode = "claude"; return; }
+    try { localStorage.setItem("__t","1"); localStorage.removeItem("__t"); this.mode = "local"; }
+    catch (e) { this.mode = "memory"; }
+  },
+  async get(k){
+    if (this.mode === "claude"){ try { const r = await window.storage.get(k); return r && r.value; } catch(e){ return null; } }
+    if (this.mode === "local") return localStorage.getItem(k);
+    return this.mem;
+  },
+  async set(k,v){
+    if (this.mode === "claude"){ await window.storage.set(k,v); return; }
+    if (this.mode === "local"){ localStorage.setItem(k,v); return; }
+    this.mem = v;
+  }
+};
+
+let done = new Set(), filter = "out", q = "", history = [];
+const $ = s => document.querySelector(s);
+const norm = s => (s||"").toLowerCase();
+
+function grid(slot, campus){
+  let cells = "";
+  for (let i=0;i<8;i++){
+    const x = (i%2)*10, y = Math.floor(i/2)*8, on = i===slot;
+    cells += `<rect x="${x}" y="${y}" width="8" height="6" rx="1.2"
+      fill="${on?"currentColor":"none"}" stroke="${on?"currentColor":"#3a4557"}" stroke-width="1"/>`;
+  }
+  return `<svg class="grid" width="18" height="30" viewBox="0 0 18 30"
+    style="color:var(--${campus==="navy"?"slate":campus})" aria-hidden="true">${cells}</svg>`;
+}
+
+function line(p){
+  const bits = [p.label];
+  if (p.yrbk) bits.push(`<em>was ${p.yrbk}</em>`);
+  if (p.host) bits.push(`guest of ${p.host}`);
+  if (p.plus) bits.push(`+1 ${p.plus}`);
+  return bits.join(" &middot; ");
+}
+
+const match = p => !q || [p.name,p.yrbk,p.host,p.plus,p.n,p.label,p.code].some(v => norm(v).includes(q));
+
+function render(){
+  const rows = PEOPLE.filter(p => {
+    if (filter==="in"  && !done.has(p.n)) return false;
+    if (filter==="out" &&  done.has(p.n)) return false;
+    return match(p);
+  });
+
+  $("#list").innerHTML = rows.length ? rows.map(p => `
+    <button class="row ${p.campus} ${done.has(p.n)?"on":""}" data-n="${p.n}" aria-pressed="${done.has(p.n)}">
+      <span class="tick">&#10003;</span>
+      <span class="who">
+        <span class="nm">${p.name}</span>
+        <span class="meta">${line(p)}</span>
+      </span>
+      <span class="loc">
+        ${grid(p.slot, p.campus)}
+        <span class="mono"><b>Sheet ${p.sheet}</b>row ${p.row} &middot; ${p.col}<i>${p.code}</i></span>
+      </span>
+    </button>`).join("")
+    : `<div class="empty"><b>${q ? "No one matches that" : (filter==="out" ? "Everyone is here" : "No one checked in yet")}</b>
+       ${q ? "Try a maiden name, or a card number." : "Names appear as you check people in."}</div>`;
+
+  const n = done.size, total = PEOPLE.length;
+  $("#cHere").textContent = n;
+  $("#cOut").textContent = `of ${total} \u00b7 ${total-n} still out`;
+  $("#fill").style.width = (total ? n/total*100 : 0) + "%";
+}
+
+$("#list").addEventListener("click", e => {
+  const row = e.target.closest(".row"); if (!row) return;
+  const id = row.dataset.n;
+  done.has(id) ? done.delete(id) : done.add(id);
+  history.push(id); save(); render();
+});
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(o => o.setAttribute("aria-selected", o===t));
+  filter = t.dataset.f; render();
+}));
+$("#q").addEventListener("input", e => { q = norm(e.target.value.trim()); render(); });
+$("#undo").addEventListener("click", () => {
+  const id = history.pop(); if (!id) return;
+  done.has(id) ? done.delete(id) : done.add(id);
+  save(); render();
+});
+$("#reset").addEventListener("click", () => {
+  if (!confirm("Clear every check-in? This cannot be undone.")) return;
+  done = new Set(); history = []; save(); render();
+});
+$("#exp").addEventListener("click", () => {
+  const here = PEOPLE.filter(p => done.has(p.n)), out = PEOPLE.filter(p => !done.has(p.n));
+  $("#expBox").value = "REUNION CHECK-IN \u2014 " + new Date().toLocaleString()
+    + "\nHERE (" + here.length + "): " + (here.map(p=>p.name+" #"+p.n).join(", ") || "\u2014")
+    + "\n\nSTILL OUT (" + out.length + "): " + (out.map(p=>p.name+" #"+p.n).join(", ") || "\u2014");
+  toggle("#expPanel"); $("#expBox").select();
+});
+$("#bak").addEventListener("click", () => {
+  $("#bakBox").value = [...done].sort().join(",");
+  toggle("#bakPanel");
+});
+$("#restore").addEventListener("click", () => {
+  const ids = $("#bakBox").value.split(/[^0-9]+/).filter(Boolean).map(s => s.padStart(3,"0"));
+  const valid = new Set(PEOPLE.map(p => p.n));
+  const keep = ids.filter(i => valid.has(i));
+  if (!confirm("Replace the current list with " + keep.length + " checked-in people?")) return;
+  done = new Set(keep); history = []; save(); render();
+});
+function toggle(sel){ const el = $(sel); el.style.display = el.style.display === "block" ? "none" : "block"; }
+
+async function save(){
+  try { await Store.set(KEY, JSON.stringify([...done])); }
+  catch (e) { warn("Progress isn't saving. Use Backup & restore to keep a copy."); }
+}
+function warn(msg){ const n = $("#note"); n.textContent = msg; n.style.display = "block"; }
+
+(function blanksInfo(){
+  const sheets = [...new Set(BLANKS.map(b => b.sheet))].sort((a,b)=>a-b);
+  $("#blankInfo").innerHTML = '<span class="mini">' + BLANKS.length + ' blank tags</span> for anyone not on the list &mdash; '
+    + 'sheet' + (sheets.length>1?'s':'') + ' <span class="mini">' + sheets.join(", ") + '</span>. Write the name on with a marker.';
+})();
+
+(async function init(){
+  Store.init();
+  if (Store.mode === "memory") warn("This browser won't save progress. Use Backup & restore before closing.");
+  const raw = await Store.get(KEY);
+  if (raw) { try { done = new Set(JSON.parse(raw)); } catch(e){} }
+  render();
+  if ("serviceWorker" in navigator && location.protocol === "https:")
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script></body></html>
