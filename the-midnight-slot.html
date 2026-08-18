@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>THE MIDNIGHT SLOT</title>
+<style>
+:root{
+  --void:#08090a;
+  --tape:#14161a;
+  --tape2:#1d2026;
+  --paper:#ded4bb;
+  --paper-dk:#c2b596;
+  --ink:#221d16;
+  --burn:#6f5433;
+  --glow:#8ec63f;
+  --sig1:#8ec63f; /* SLIME */
+  --sig2:#96603a; /* BROWN */
+  --sig3:#c9d2d8; /* CHROME */
+  --sig4:#e2384d; /* PRISM */
+  --sig5:#3a72d6; /* COBALT */
+  --sig6:#f0b323; /* SULFUR */
+  --static:#2a2622;
+  --display:'Haettenschweiler','Arial Narrow',"Arial Narrow Bold",Impact,'Franklin Gothic Bold',sans-serif;
+  --mono:'Courier New',ui-monospace,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--void);
+  color:var(--paper);
+  font-family:var(--mono);
+  font-size:14px;
+  overflow-x:hidden;
+  overscroll-behavior:none;
+}
+/* ---- CRT atmosphere ---- */
+#scan{position:fixed;inset:0;pointer-events:none;z-index:900;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.28) 0 1px,rgba(0,0,0,0) 1px 3px);
+  mix-blend-mode:multiply;opacity:.75}
+#vig{position:fixed;inset:0;pointer-events:none;z-index:901;
+  background:radial-gradient(120% 90% at 50% 45%,transparent 42%,rgba(0,0,0,.72) 100%)}
+#track{position:fixed;left:0;right:0;height:70px;pointer-events:none;z-index:902;opacity:.16;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,.85),transparent);
+  animation:roll 9s linear infinite}
+@keyframes roll{0%{top:-12%}100%{top:112%}}
+@media (prefers-reduced-motion:reduce){#track{animation:none;opacity:.05}}
+
+.wrap{max-width:860px;margin:0 auto;padding:14px 14px 90px;position:relative;z-index:10}
+
+/* ---- type ---- */
+.disp{font-family:var(--display);text-transform:uppercase;letter-spacing:.02em;line-height:.92;
+  text-shadow:2px 0 0 rgba(226,56,77,.55),-2px 0 0 rgba(58,114,214,.5)}
+.eyebrow{font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:#7d8a78;margin:0 0 6px}
+
+/* ---- header ---- */
+header{display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid #2b2f34;padding-bottom:10px;margin-bottom:14px}
+#flag{flex:0 0 auto;width:52px;height:34px;border:1px solid #3a3f45;background:#000}
+.htext{flex:1 1 auto;min-width:0}
+#showTitle{font-size:clamp(26px,7vw,46px);margin:2px 0 3px}
+#showTag{font-size:11px;color:#9aa79a;font-style:italic;letter-spacing:.04em}
+#slotNo{font-family:var(--display);font-size:30px;color:#4a5250;line-height:1}
+
+/* ---- board ---- */
+#stage{position:relative}
+#boardGrid{display:grid;gap:0;margin:0 auto;width:100%;}
+.sumcell{display:flex;align-items:center;justify-content:center;font-family:var(--display);
+  font-size:clamp(11px,2.6vw,15px);color:#6f7a6c;letter-spacing:.02em}
+.sumcell.ok{color:var(--sig1)}
+.sumcell.bad{color:var(--sig4)}
+.cell{position:relative;aspect-ratio:1/1;background:#101216;
+  box-shadow:inset 0 0 0 1px #262b31;}
+.cell.empty::after{content:"";position:absolute;inset:26%;border:1px dashed #2e343b;border-radius:2px}
+.cell.drop{box-shadow:inset 0 0 0 2px var(--sig1)}
+
+/* ---- tiles ---- */
+.tile{position:absolute;inset:2px;cursor:grab;touch-action:none;user-select:none;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.6))}
+.tile svg{display:block;width:100%;height:100%}
+.tile.sel{outline:2px solid var(--sig6);outline-offset:1px;z-index:5}
+.tile.locked{cursor:not-allowed}
+.tile.lift{opacity:.25}
+.tile.shake{animation:shake .28s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.edgemark{position:absolute;background:var(--sig4);opacity:0;z-index:6;pointer-events:none;
+  box-shadow:0 0 6px var(--sig4)}
+.edgemark.on{opacity:.95;animation:tear .5s steps(3) infinite}
+@keyframes tear{0%,100%{opacity:.9}50%{opacity:.35}}
+.em-t{top:-1px;left:12%;right:12%;height:3px}
+.em-b{bottom:-1px;left:12%;right:12%;height:3px}
+.em-l{left:-1px;top:12%;bottom:12%;width:3px}
+.em-r{right:-1px;top:12%;bottom:12%;width:3px}
+
+/* ---- tray ---- */
+#trayWrap{margin-top:14px;border:1px solid #2b2f34;background:#0d0f12;padding:8px}
+#trayHead{display:flex;justify-content:space-between;align-items:baseline;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;color:#6f7a6c;margin-bottom:7px}
+#tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px;min-height:70px}
+.slot{position:relative;aspect-ratio:1/1;background:#0a0c0e;box-shadow:inset 0 0 0 1px #23282e}
+
+/* ---- controls ---- */
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:800;background:linear-gradient(to top,#0a0b0d 70%,rgba(10,11,13,.85));
+  border-top:1px solid #2b2f34;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+button{font-family:var(--display);font-size:16px;letter-spacing:.06em;text-transform:uppercase;
+  background:#191d22;color:var(--paper);border:1px solid #3b424a;padding:8px 13px;cursor:pointer;
+  transition:background .12s,color .12s}
+button:hover:not(:disabled){background:var(--paper);color:#111}
+button:disabled{opacity:.3;cursor:default}
+button:focus-visible{outline:2px solid var(--sig6);outline-offset:2px}
+.btn-go{background:var(--sig1);color:#0a0c08;border-color:var(--sig1)}
+.btn-go:hover:not(:disabled){background:#b6e86a;color:#0a0c08}
+
+/* ---- legend ---- */
+#legend{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px 12px;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:#77827a;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:5px}
+.sw{width:13px;height:13px;border:1px solid #000;display:inline-block}
+
+/* ---- overlays ---- */
+.ov{position:fixed;inset:0;z-index:950;background:rgba(4,5,6,.96);display:flex;align-items:center;
+  justify-content:center;padding:20px;overflow-y:auto}
+.ov[hidden]{display:none}
+.card{max-width:520px;width:100%;text-align:center}
+.card h1{font-family:var(--display);font-size:clamp(34px,10vw,64px);margin:0 0 8px;
+  text-shadow:3px 0 0 rgba(226,56,77,.6),-3px 0 0 rgba(58,114,214,.55)}
+.card p{font-size:13px;line-height:1.6;color:#a9b3a6}
+.card .tag{font-style:italic;color:var(--sig6);font-size:13px;letter-spacing:.05em}
+.rule{height:1px;background:#2f353b;margin:16px 0}
+
+/* channel guide */
+#guide{display:grid;gap:7px;margin-top:14px;text-align:left}
+.gitem{display:flex;gap:10px;align-items:center;border:1px solid #2b2f34;background:#0f1114;padding:9px 11px;
+  cursor:pointer;transition:border-color .12s,background .12s}
+.gitem:hover{border-color:var(--sig1);background:#141a14}
+.gitem.locked{opacity:.42;cursor:not-allowed;filter:grayscale(1)}
+.gitem.locked:hover{border-color:#2b2f34;background:#0f1114}
+.gno{font-family:var(--display);font-size:24px;color:#4d5550;min-width:28px}
+.gname{font-family:var(--display);font-size:17px;letter-spacing:.03em;line-height:1.05}
+.gsub{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#6c766b;margin-top:3px}
+.gmark{margin-left:auto;font-size:11px;letter-spacing:.14em;color:var(--sig1);text-align:right;white-space:nowrap}
+
+/* solved art */
+#art{width:100%;max-width:300px;margin:0 auto 14px;border:1px solid #333;background:#050607}
+#art svg{display:block;width:100%;height:auto}
+.caption{font-size:13px;line-height:1.65;color:var(--paper);margin:12px 0 4px}
+.stats{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6f7a6c}
+
+/* grimble */
+.grim{position:absolute;right:5%;bottom:5%;width:24%;height:24%;cursor:pointer;z-index:7}
+.grimfound{position:absolute;right:5%;bottom:5%;width:24%;height:24%;opacity:.35;pointer-events:none}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:78px;z-index:940;background:var(--sig6);
+  color:#12100a;font-family:var(--display);font-size:16px;letter-spacing:.08em;padding:7px 14px;
+  opacity:0;transition:opacity .25s;pointer-events:none;text-transform:uppercase}
+#toast.on{opacity:1}
+#ghost{position:fixed;z-index:960;pointer-events:none;width:70px;height:70px;transform:translate(-50%,-50%) rotate(-4deg);
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.8))}
+#ghost svg{width:100%;height:100%;display:block}
+.hidden{display:none!important}
+a{color:var(--sig1)}
+</style>
+</head>
+<body>
+<div id="scan"></div><div id="vig"></div><div id="track"></div>
+
+<div class="wrap" id="game" hidden>
+  <header>
+    <div id="flag"></div>
+    <div class="htext">
+      <div class="eyebrow" id="sponsor">TONIGHT'S SPONSOR</div>
+      <div class="disp" id="showTitle">—</div>
+      <div id="showTag">—</div>
+    </div>
+    <div id="slotNo">01</div>
+  </header>
+
+  <div id="stage">
+    <div id="boardGrid"></div>
+  </div>
+
+  <div id="trayWrap">
+    <div id="trayHead"><span>Loose frames</span><span id="trayCount">0</span></div>
+    <div id="tray"></div>
+  </div>
+
+  <div id="legend"></div>
+</div>
+
+<div id="bar" hidden>
+  <button id="bRot">Rotate</button>
+  <button id="bUndo">Undo</button>
+  <button id="bReset">Reset</button>
+  <button id="bHint">Tracking</button>
+  <button id="bGuide">Guide</button>
+</div>
+
+<!-- TITLE / MENU OVERLAY -->
+<div class="ov" id="ovMenu">
+  <div class="card">
+    <div class="eyebrow">Channel 4 &middot; overnight programming</div>
+    <h1 class="disp">The Midnight Slot</h1>
+    <p>One tape. Four broadcasts recorded over each other. You're the overnight editor and the station signs off at dawn.</p>
+    <div class="rule"></div>
+    <p style="text-align:left;font-size:12px">
+      <b style="color:var(--sig6)">HOW TO RESTORE A FRAME</b><br>
+      1. Every frame edge carries a coloured <b>signal</b>.<br>
+      2. Touching edges must carry the <b>same signal</b>, or the picture tears.<br>
+      3. The outside of the frame must be <b>dead static</b> — signal can't run off the tape.<br>
+      4. Frames <b style="color:var(--burn)">burned into the tape</b> can't be moved. Start there.<br>
+      Later slots let you rotate frames, and some rows are missing their <b>atomic totals</b>. Those add up.
+    </p>
+    <div id="guide"></div>
+    <div class="rule"></div>
+    <p class="stats" id="grimCount">Grimbles located: 0 / 9</p>
+  </div>
+</div>
+
+<!-- LEVEL CARD -->
+<div class="ov" id="ovCard" hidden>
+  <div class="card">
+    <div class="eyebrow" id="cardNo">Slot 01</div>
+    <h1 class="disp" id="cardTitle">—</h1>
+    <p class="tag" id="cardTag">—</p>
+    <div class="rule"></div>
+    <p class="stats" id="cardMeta">—</p>
+    <div style="margin-top:16px"><button class="btn-go" id="bPlay">Roll tape</button>
+    <button id="bBack">Back</button></div>
+  </div>
+</div>
+
+<!-- SOLVED -->
+<div class="ov" id="ovWin" hidden>
+  <div class="card">
+    <div class="eyebrow">Signal restored</div>
+    <h1 class="disp" id="winTitle">—</h1>
+    <div id="art"></div>
+    <p class="caption" id="winCap">—</p>
+    <p class="stats" id="winStats">—</p>
+    <div style="margin-top:16px">
+      <button class="btn-go" id="bNext">Next broadcast</button>
+      <button id="bAgain">Re-record</button>
+      <button id="bMenu2">Guide</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="ghost" class="hidden"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   THE MIDNIGHT SLOT
+   Edge-matching restoration puzzle. Every board is generated
+   at runtime and proven to have exactly one signal pattern
+   by exhaustive search before it is ever shown to you.
+   ============================================================ */
+
+/* ---------- seeded RNG ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+const pick=(rng,arr)=>arr[Math.floor(rng()*arr.length)];
+function shuffled(rng,arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---------- signals ---------- */
+const SIGNAL=[
+  {name:"STATIC",hex:"#2a2622"},
+  {name:"SLIME",hex:"#8ec63f"},
+  {name:"BROWN",hex:"#96603a"},
+  {name:"CHROME",hex:"#c9d2d8"},
+  {name:"PRISM",hex:"#e2384d"},
+  {name:"COBALT",hex:"#3a72d6"},
+  {name:"SULFUR",hex:"#f0b323"}
+];
+
+/* ---------- elements ---------- */
+const E=(z,sym,name,fam)=>({z,sym,name,fam});
+const ELEMENTS=[
+  E(1,"H","Hydrogen","light"),E(2,"He","Helium","noble"),E(3,"Li","Lithium","alkali"),
+  E(4,"Be","Beryllium","light"),E(5,"B","Boron","light"),E(6,"C","Carbon","light"),
+  E(7,"N","Nitrogen","light"),E(8,"O","Oxygen","light"),E(9,"F","Fluorine","halogen"),
+  E(10,"Ne","Neon","noble"),E(11,"Na","Sodium","alkali"),E(12,"Mg","Magnesium","light"),
+  E(13,"Al","Aluminium","light"),E(14,"Si","Silicon","light"),E(15,"P","Phosphorus","light"),
+  E(16,"S","Sulfur","light"),E(17,"Cl","Chlorine","halogen"),E(18,"Ar","Argon","noble"),
+  E(19,"K","Potassium","alkali"),E(20,"Ca","Calcium","light"),E(22,"Ti","Titanium","transition"),
+  E(23,"V","Vanadium","transition"),E(24,"Cr","Chromium","transition"),E(25,"Mn","Manganese","transition"),
+  E(26,"Fe","Iron","transition"),E(27,"Co","Cobalt","transition"),E(28,"Ni","Nickel","transition"),
+  E(29,"Cu","Copper","transition"),E(30,"Zn","Zinc","transition"),E(31,"Ga","Gallium","transition"),
+  E(33,"As","Arsenic","heavy"),E(34,"Se","Selenium","heavy"),E(35,"Br","Bromine","halogen"),
+  E(36,"Kr","Krypton","noble"),E(37,"Rb","Rubidium","alkali"),E(38,"Sr","Strontium","heavy"),
+  E(39,"Y","Yttrium","transition"),E(40,"Zr","Zirconium","transition"),E(41,"Nb","Niobium","transition"),
+  E(42,"Mo","Molybdenum","transition"),E(47,"Ag","Silver","transition"),E(48,"Cd","Cadmium","heavy"),
+  E(50,"Sn","Tin","heavy"),E(51,"Sb","Antimony","heavy"),E(52,"Te","Tellurium","heavy"),
+  E(53,"I","Iodine","halogen"),E(54,"Xe","Xenon","noble"),E(55,"Cs","Caesium","alkali"),
+  E(56,"Ba","Barium","heavy"),E(57,"La","Lanthanum","lanth"),E(58,"Ce","Cerium","lanth"),
+  E(60,"Nd","Neodymium","lanth"),E(62,"Sm","Samarium","lanth"),E(63,"Eu","Europium","lanth"),
+  E(64,"Gd","Gadolinium","lanth"),E(65,"Tb","Terbium","lanth"),E(66,"Dy","Dysprosium","lanth"),
+  E(67,"Ho","Holmium","lanth"),E(68,"Er","Erbium","lanth"),E(69,"Tm","Thulium","lanth"),
+  E(70,"Yb","Ytterbium","lanth"),E(71,"Lu","Lutetium","lanth"),E(74,"W","Tungsten","heavy"),
+  E(76,"Os","Osmium","heavy"),E(77,"Ir","Iridium","heavy"),E(78,"Pt","Platinum","heavy"),
+  E(79,"Au","Gold","heavy"),E(80,"Hg","Mercury","heavy"),E(81,"Tl","Thallium","heavy"),
+  E(82,"Pb","Lead","heavy"),E(83,"Bi","Bismuth","heavy"),E(84,"Po","Polonium","hot"),
+  E(85,"At","Astatine","hot"),E(86,"Rn","Radon","hot"),E(88,"Ra","Radium","hot"),
+  E(90,"Th","Thorium","hot"),E(92,"U","Uranium","hot"),E(93,"Np","Neptunium","hot"),
+  E(94,"Pu","Plutonium","hot"),E(95,"Am","Americium","hot"),E(96,"Cm","Curium","hot")
+];
+
+/* ---------- broadcasts ---------- */
+const LEVELS=[
+ {n:1,W:3,H:3,C:4,rot:false,sums:0,fam:"alkali",seed:10331,
+  title:"Please Adjust Your Tracking",
+  tag:"We'll wait. We have all night and no other viewers.",
+  cap:"The station has been broadcasting to you specifically since 1993, and to no one else, ever."},
+ {n:2,W:3,H:3,C:4,rot:false,sums:0,fam:"halogen",seed:20477,
+  title:"The Soup Has Rules",
+  tag:"Speak the order. Do not deviate. Do not thank him.",
+  cap:"You were fourth in line at 11:52pm. At 11:53pm you were the soup, and it was, by every account, excellent."},
+ {n:3,W:3,H:3,C:4,rot:true,sums:0,fam:"noble",seed:30859,
+  title:"Night of the Low Talker",
+  tag:"You'll agree to something. You won't know what.",
+  cap:"You agreed. He has it in writing, in a font too small to litigate, and you will wear it on Thursday."},
+ {n:4,W:4,H:4,C:5,rot:true,sums:0,fam:"transition",seed:41231,
+  title:"Stay Out of the Crawlspace",
+  tag:"The house has an opinion and the house is louder than you.",
+  cap:"The crawlspace was, it turns out, the house's mouth — and you were the part of dinner it liked."},
+ {n:5,W:4,H:4,C:5,rot:true,sums:1,fam:"heavy",seed:51749,
+  title:"My Babysitter Is a Heel",
+  tag:"She turns on you in the third act. There is no referee.",
+  cap:"She takes the belt, the house, and the two hours between 9 and 11 that you will never be able to describe."},
+ {n:6,W:4,H:4,C:5,rot:true,sums:2,fam:"lanth",seed:62111,
+  title:"Side Two Plays By Itself",
+  tag:"Nobody put it on. Nobody has to.",
+  cap:"Side two has been playing this entire time, in a room of your house you have somehow never opened."},
+ {n:7,W:5,H:5,C:6,rot:true,sums:0,fam:"mixed",seed:71933,
+  title:"The Flag of Nowhere",
+  tag:"Two colours and a shape. It has an anthem. It has an army.",
+  cap:"The nation exists, files its paperwork, and simply declines — politely, in triplicate — to be located."},
+ {n:8,W:5,H:5,C:6,rot:true,sums:2,fam:"hot",seed:82397,
+  title:"Sign-Off",
+  tag:"Thank you for watching. Please don't.",
+  cap:"Thank you for watching. Your name is in the credits now, which is, after all, where names are kept."},
+ {n:9,W:4,H:4,C:6,rot:true,sums:2,fam:"mixed",seed:99991,secret:true,
+  title:"Grimble's Own Channel",
+  tag:"He was never hiding. You just weren't looking correctly.",
+  cap:"Grimble thanks you for the nine years of attention and regrets that the arrangement is not reciprocal."}
+];
+
+/* ---------- storage (no localStorage; falls back to memory) ---------- */
+const Store={mem:{},
+  async get(k){try{if(window.storage){const r=await window.storage.get(k);if(r&&r.value)return JSON.parse(r.value);}}catch(e){}return this.mem[k]??null;},
+  async set(k,v){this.mem[k]=v;try{if(window.storage)await window.storage.set(k,JSON.stringify(v));}catch(e){}}};
+let SAVE={solved:[],grimbles:[]};
+
+/* ============================================================
+   PUZZLE GENERATION + EXHAUSTIVE UNIQUENESS PROOF
+   ============================================================ */
+function edgeAt(tile,orient,side){return tile.e[(side-orient+4)%4];} // 0=T 1=R 2=B 3=L
+
+function buildCandidates(W,H,tiles,rot){
+  // For each cell, precompute every (tile,orient) legal on the border alone.
+  const cands=[];
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){
+    const list=[];
+    for(let t=0;t<tiles.length;t++){
+      const oMax=rot?4:1;
+      for(let o=0;o<oMax;o++){
+        if(r===0&&edgeAt(tiles[t],o,0)!==0)continue;
+        if(c===W-1&&edgeAt(tiles[t],o,1)!==0)continue;
+        if(r===H-1&&edgeAt(tiles[t],o,2)!==0)continue;
+        if(c===0&&edgeAt(tiles[t],o,3)!==0)continue;
+        if(r>0&&edgeAt(tiles[t],o,0)===0)continue;
+        if(c<W-1&&edgeAt(tiles[t],o,1)===0)continue;
+        if(r<H-1&&edgeAt(tiles[t],o,2)===0)continue;
+        if(c>0&&edgeAt(tiles[t],o,3)===0)continue;
+        list.push([t,o]);
+      }
+    }
+    cands.push(list);
+  }
+  return cands;
+}
+
+/* Counts DISTINCT signal patterns (what the player can actually perceive).
+   Returns {n, over} — over=true if the search budget blew out. */
+function countPatterns(W,H,tiles,rot,locks,rowSums,colSums,cands,budget){
+  const N=W*H,used=new Uint8Array(tiles.length),place=new Array(N);
+  const rowAcc=new Array(H).fill(0),colAcc=new Array(W).fill(0);
+  const seen=new Set();let nodes=0,over=false;
+  function rec(i){
+    if(over)return;
+    if(seen.size>1)return;
+    if(++nodes>budget){over=true;return;}
+    if(i===N){
+      let s="";
+      for(let k=0;k<N;k++){const p=place[k],t=tiles[p[0]];
+        for(let side=0;side<4;side++)s+=edgeAt(t,p[1],side);}
+      seen.add(s);return;
+    }
+    const r=(i/W)|0,c=i%W;
+    const needL=c>0?edgeAt(tiles[place[i-1][0]],place[i-1][1],1):0;
+    const needT=r>0?edgeAt(tiles[place[i-W][0]],place[i-W][1],2):0;
+    const lock=locks[i];
+    const list=lock!==undefined?[[lock.t,lock.o]]:cands[i];
+    for(let k=0;k<list.length;k++){
+      const t=list[k][0],o=list[k][1];
+      if(used[t])continue;
+      if(edgeAt(tiles[t],o,3)!==needL)continue;
+      if(r>0&&edgeAt(tiles[t],o,0)!==needT)continue;
+      const z=tiles[t].el.z;
+      const rt=rowSums[r],ct=colSums[c];
+      if(rt!==null){const na=rowAcc[r]+z;if(na>rt)continue;if(c===W-1&&na!==rt)continue;}
+      if(ct!==null){const na=colAcc[c]+z;if(na>ct)continue;if(r===H-1&&na!==ct)continue;}
+      used[t]=1;place[i]=[t,o];rowAcc[r]+=z;colAcc[c]+=z;
+      rec(i+1);
+      used[t]=0;rowAcc[r]-=z;colAcc[c]-=z;
+      if(over||seen.size>1)return;
+    }
+  }
+  rec(0);
+  return {n:seen.size,over};
+}
+
+function makePuzzle(L,seed){
+  const {W,H,C,rot}=L,N=W*H;
+  const famPool=ELEMENTS.filter(e=>L.fam==="mixed"?true:e.fam===L.fam);
+  for(let attempt=0;attempt<60;attempt++){
+    const rng=mulberry32(seed*7919+attempt*104729+13);
+    // signal grid
+    const v=[],h=[];
+    for(let r=0;r<H;r++){v.push([]);for(let c=0;c<=W;c++)v[r].push(c===0||c===W?0:1+Math.floor(rng()*C));}
+    for(let r=0;r<=H;r++){h.push([]);for(let c=0;c<W;c++)h[r].push(r===0||r===H?0:1+Math.floor(rng()*C));}
+    // elements
+    let pool=shuffled(rng,famPool);
+    if(pool.length<N)pool=pool.concat(shuffled(rng,ELEMENTS.filter(e=>!pool.includes(e))));
+    const home=[];
+    for(let r=0;r<H;r++)for(let c=0;c<W;c++){
+      home.push({e:[h[r][c],v[r][c+1],h[r+1][c],v[r][c]],el:pool[r*W+c]});
+    }
+    // shuffle into tape order
+    const order=shuffled(rng,home.map((_,i)=>i));
+    const tiles=order.map(i=>home[i]);
+    const cellToTile=new Array(N);order.forEach((homeIdx,tileIdx)=>{cellToTile[homeIdx]=tileIdx;});
+    // sums
+    const rowSums=new Array(H).fill(null),colSums=new Array(W).fill(null);
+    if(L.sums>=1)for(let r=0;r<H;r++){let s=0;for(let c=0;c<W;c++)s+=home[r*W+c].el.z;rowSums[r]=s;}
+    if(L.sums>=2)for(let c=0;c<W;c++){let s=0;for(let r=0;r<H;r++)s+=home[r*W+c].el.z;colSums[c]=s;}
+
+    const cands=buildCandidates(W,H,tiles,rot);
+    const locks={};
+    const budget=N<=9?260000:900000;
+    let res=countPatterns(W,H,tiles,rot,locks,rowSums,colSums,cands,budget);
+    if(res.over)continue;
+    // burn tiles into the tape until only one pattern survives
+    const lockOrder=shuffled(rng,home.map((_,i)=>i));
+    let li=0;const maxLocks=Math.max(1,Math.floor(N*0.42));
+    while(res.n!==1&&li<lockOrder.length){
+      const cell=lockOrder[li++];
+      locks[cell]={t:cellToTile[cell],o:0};
+      res=countPatterns(W,H,tiles,rot,locks,rowSums,colSums,cands,budget);
+      if(res.over){res.n=0;break;}
+      if(Object.keys(locks).length>maxLocks&&res.n!==1)break;
+    }
+    if(res.n!==1)continue;
+    if(Object.keys(locks).length===0){ // always burn one, for a foothold
+      const cell=lockOrder[0];locks[cell]={t:cellToTile[cell],o:0};
+    }
+    return {W,H,C,rot,tiles,cellToTile,locks,rowSums,colSums,
+            grimble:Math.floor(rng()*tiles.length),
+            startOrient:tiles.map(()=>rot?Math.floor(rng()*4):0)};
+  }
+  return null;
+}
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+let L=null,P=null,board=[],tray=[],sel=null,undoStack=[],hintsUsed=0,startTime=0,curSeed=0,grimFound=false;
+
+function newGame(level,seed){
+  L=level;curSeed=seed;
+  P=makePuzzle(L,seed);
+  if(!P){toast("Tape jammed — rerolling");P=makePuzzle(L,seed+1);}
+  board=new Array(P.W*P.H).fill(null);
+  tray=[];hintsUsed=0;undoStack=[];sel=null;grimFound=(SAVE.grimbles||[]).includes(L.n);
+  const lockedTiles=new Set();
+  for(const cell in P.locks){const l=P.locks[cell];board[cell]={t:l.t,o:l.o,lock:true};lockedTiles.add(l.t);}
+  for(let t=0;t<P.tiles.length;t++)if(!lockedTiles.has(t))tray.push({t,o:P.startOrient[t]});
+  tray=shuffled(mulberry32(seed+7),tray);
+  startTime=Date.now();
+  paintHeader();render();
+}
+
+function snapshot(){undoStack.push({b:board.map(x=>x?{...x}:null),t:tray.map(x=>({...x})),s:sel?{...sel}:null});if(undoStack.length>60)undoStack.shift();}
+function undo(){if(!undoStack.length)return;const s=undoStack.pop();board=s.b;tray=s.t;sel=null;render();}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function tileSVG(tile,orient,opts){
+  opts=opts||{};
+  const col=s=>SIGNAL[edgeAt(tile,orient,s)].hex;
+  const isS=s=>edgeAt(tile,orient,s)===0;
+  const face=opts.locked?"#a9946f":"var(--paper)";
+  const band=(s,pts)=>`<polygon points="${pts}" fill="${col(s)}"/>`+
+    (isS(s)?`<polygon points="${pts}" fill="url(#hatch)"/>`:"");
+  const el=tile.el;
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#1a1714"/><rect width="3" height="6" fill="#332e28"/></pattern></defs>
+  <rect x="0" y="0" width="100" height="100" fill="${face}"/>
+  ${band(0,"0,0 100,0 86,14 14,14")}
+  ${band(1,"100,0 100,100 86,86 86,14")}
+  ${band(2,"100,100 0,100 14,86 86,86")}
+  ${band(3,"0,100 0,0 14,14 14,86")}
+  <rect x="14" y="14" width="72" height="72" fill="${opts.locked?"#c0a97f":"var(--paper)"}" />
+  <rect x="14" y="14" width="72" height="72" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+  <text x="20" y="28" font-family="Courier New,monospace" font-size="11" fill="rgba(34,29,22,.75)">${el.z}</text>
+  <text x="50" y="63" text-anchor="middle" font-family="Georgia,serif" font-weight="bold" font-size="34" fill="#221d16">${el.sym}</text>
+  <text x="50" y="79" text-anchor="middle" font-family="Courier New,monospace" font-size="8.5" fill="rgba(34,29,22,.65)" letter-spacing="0.5">${el.name.toUpperCase()}</text>
+  ${opts.locked?`<text x="80" y="28" text-anchor="end" font-family="Courier New,monospace" font-size="7" fill="#5d4321">BURNED</text>`:""}
+</svg>`;
+}
+function grimbleSVG(){return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="20" cy="21" rx="15" ry="16" fill="#6c8f2e"/>
+<ellipse cx="20" cy="19" rx="13" ry="13.5" fill="#8ec63f"/>
+<ellipse cx="14" cy="17" rx="3.4" ry="4.2" fill="#f4eddb"/><ellipse cx="26" cy="17" rx="3.4" ry="4.2" fill="#f4eddb"/>
+<circle cx="14.8" cy="18.2" r="1.9" fill="#1a1a12"/><circle cx="25.2" cy="18.2" r="1.9" fill="#1a1a12"/>
+<path d="M11 25 q9 9 18 0 q-9 4 -18 0z" fill="#2a2418"/>
+<path d="M12.5 25.6 l2 3 l2-3z M17 26.4 l2 3.2 l2-3.2z M21.5 26.4 l2 3 l2-3z" fill="#f4eddb"/>
+<path d="M6 10 q4 -5 8 -2 M34 10 q-4 -5 -8 -2" stroke="#4e6a1f" stroke-width="2" fill="none"/></svg>`;}
+
+function paintHeader(){
+  document.getElementById("showTitle").textContent=L.title;
+  document.getElementById("showTag").textContent=L.tag;
+  document.getElementById("slotNo").textContent=L.secret?"??":String(L.n).padStart(2,"0");
+  const famName={alkali:"the alkali metals",halogen:"the halogens",noble:"the noble gases",
+    transition:"the transition metals",heavy:"the heavy metals",lanth:"the lanthanides",
+    hot:"the radioactives",mixed:"the whole table"}[L.fam];
+  document.getElementById("sponsor").textContent="Tonight's sponsor: "+famName;
+  // station flag from this slot's palette
+  const cols=[];for(let i=1;i<=L.C;i++)cols.push(SIGNAL[i].hex);
+  const w=100/cols.length;
+  document.getElementById("flag").innerHTML=`<svg viewBox="0 0 100 66" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:100%">
+    ${cols.map((c,i)=>`<rect x="${i*w}" y="0" width="${w+0.5}" height="66" fill="${c}"/>`).join("")}
+    <circle cx="50" cy="33" r="13" fill="#08090a"/><circle cx="50" cy="33" r="5" fill="#08090a" stroke="${cols[0]}" stroke-width="1.5"/></svg>`;
+  const lg=document.getElementById("legend");
+  lg.innerHTML=`<span class="chip"><span class="sw" style="background:#2a2622"></span>Static — edge of tape</span>`+
+    cols.map((c,i)=>`<span class="chip"><span class="sw" style="background:${c}"></span>${SIGNAL[i+1].name}</span>`).join("");
+}
+
+function conflicts(){
+  const {W,H}=P,out=new Array(W*H).fill(0);
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){
+    const i=r*W+c,a=board[i];if(!a)continue;
+    const A=P.tiles[a.t];
+    if(c<W-1){const b=board[i+1];if(b&&edgeAt(A,a.o,1)!==edgeAt(P.tiles[b.t],b.o,3)){out[i]|=2;out[i+1]|=8;}}
+    if(r<H-1){const b=board[i+W];if(b&&edgeAt(A,a.o,2)!==edgeAt(P.tiles[b.t],b.o,0)){out[i]|=4;out[i+W]|=1;}}
+    if(r===0&&edgeAt(A,a.o,0)!==0)out[i]|=1;
+    if(c===W-1&&edgeAt(A,a.o,1)!==0)out[i]|=2;
+    if(r===H-1&&edgeAt(A,a.o,2)!==0)out[i]|=4;
+    if(c===0&&edgeAt(A,a.o,3)!==0)out[i]|=8;
+  }
+  return out;
+}
+function sumState(){
+  const {W,H}=P,rows=[],cols=[];
+  for(let r=0;r<H;r++){let s=0,full=true;for(let c=0;c<W;c++){const b=board[r*W+c];if(b)s+=P.tiles[b.t].el.z;else full=false;}rows.push({s,full});}
+  for(let c=0;c<W;c++){let s=0,full=true;for(let r=0;r<H;r++){const b=board[r*W+c];if(b)s+=P.tiles[b.t].el.z;else full=false;}cols.push({s,full});}
+  return {rows,cols};
+}
+function isSolved(){
+  if(board.some(b=>!b))return false;
+  if(conflicts().some(x=>x!==0))return false;
+  const st=sumState();
+  for(let r=0;r<P.H;r++)if(P.rowSums[r]!==null&&st.rows[r].s!==P.rowSums[r])return false;
+  for(let c=0;c<P.W;c++)if(P.colSums[c]!==null&&st.cols[c].s!==P.colSums[c])return false;
+  return true;
+}
+
+function render(){
+  const {W,H}=P,g=document.getElementById("boardGrid");
+  const hasRow=P.rowSums.some(x=>x!==null),hasCol=P.colSums.some(x=>x!==null);
+  const lead=hasRow?"minmax(34px,auto) ":"";
+  g.style.gridTemplateColumns=lead+`repeat(${W},1fr)`;
+  g.style.gridTemplateRows=(hasCol?"minmax(22px,auto) ":"")+`repeat(${H},1fr)`;
+  const cf=conflicts(),st=sumState();
+  let html="";
+  if(hasCol){
+    if(hasRow)html+=`<div class="sumcell"></div>`;
+    for(let c=0;c<W;c++){
+      const t=P.colSums[c];let cls="";
+      if(t!==null){if(st.cols[c].full)cls=st.cols[c].s===t?"ok":"bad";else if(st.cols[c].s>t)cls="bad";}
+      html+=`<div class="sumcell ${cls}">${t===null?"":t}</div>`;
+    }
+  }
+  for(let r=0;r<H;r++){
+    if(hasRow){
+      const t=P.rowSums[r];let cls="";
+      if(t!==null){if(st.rows[r].full)cls=st.rows[r].s===t?"ok":"bad";else if(st.rows[r].s>t)cls="bad";}
+      html+=`<div class="sumcell ${cls}">${t===null?"":t}</div>`;
+    }
+    for(let c=0;c<W;c++){
+      const i=r*W+c,b=board[i];
+      html+=`<div class="cell ${b?"":"empty"}" data-cell="${i}">`;
+      if(b){
+        const T=P.tiles[b.t],selD=sel&&sel.k==="b"&&sel.i===i;
+        html+=`<div class="tile ${b.lock?"locked":""} ${selD?"sel":""}" data-tile="${b.t}" data-locked="${b.lock?1:0}" data-src="b" data-i="${i}">
+          ${tileSVG(T,b.o,{locked:b.lock})}
+          <span class="edgemark em-t ${cf[i]&1?"on":""}"></span><span class="edgemark em-r ${cf[i]&2?"on":""}"></span>
+          <span class="edgemark em-b ${cf[i]&4?"on":""}"></span><span class="edgemark em-l ${cf[i]&8?"on":""}"></span>
+          ${b.t===P.grimble?(grimFound?`<span class="grimfound">${grimbleSVG()}</span>`:`<span class="grim" data-grim="1">${grimbleSVG()}</span>`):""}
+        </div>`;
+      }
+      html+=`</div>`;
+    }
+  }
+  g.innerHTML=html;
+  // tray
+  const tr=document.getElementById("tray");
+  tr.innerHTML=tray.map((x,idx)=>{
+    const T=P.tiles[x.t],selD=sel&&sel.k==="t"&&sel.i===idx;
+    return `<div class="slot" data-tray="${idx}"><div class="tile ${selD?"sel":""}" data-tile="${x.t}" data-locked="0" data-src="t" data-i="${idx}">
+      ${tileSVG(T,x.o,{})}
+      ${x.t===P.grimble?(grimFound?`<span class="grimfound">${grimbleSVG()}</span>`:`<span class="grim" data-grim="1">${grimbleSVG()}</span>`):""}
+    </div></div>`;}).join("");
+  document.getElementById("trayCount").textContent=tray.length+" left";
+  document.getElementById("bRot").disabled=!P.rot||!sel;
+  document.getElementById("bUndo").disabled=!undoStack.length;
+  if(isSolved())setTimeout(win,340);
+}
+
+/* ============================================================
+   INPUT — drag, or tap-then-tap
+   ============================================================ */
+let drag=null;
+const ghost=document.getElementById("ghost");
+
+function getRef(el){return {k:el.dataset.src,i:parseInt(el.dataset.i,10)};}
+function tileAt(ref){return ref.k==="b"?board[ref.i]:tray[ref.i];}
+
+function place(from,toCell){
+  if(board[toCell]&&board[toCell].lock){shakeCell(toCell);return;}
+  snapshot();
+  if(from.k==="t"){
+    const item=tray.splice(from.i,1)[0];
+    const occ=board[toCell];
+    board[toCell]={t:item.t,o:item.o,lock:false};
+    if(occ)tray.push({t:occ.t,o:occ.o});
+  }else{
+    if(from.i===toCell)return;
+    if(board[from.i]&&board[from.i].lock){shakeCell(from.i);return;}
+    const a=board[from.i],b=board[toCell];
+    board[toCell]=a;board[from.i]=b||null;
+  }
+  sel=null;render();
+}
+function toTray(from){
+  if(from.k!=="b")return;
+  if(board[from.i].lock){shakeCell(from.i);return;}
+  snapshot();
+  const b=board[from.i];board[from.i]=null;tray.push({t:b.t,o:b.o});sel=null;render();
+}
+function rotate(ref){
+  if(!P.rot)return;
+  const obj=tileAt(ref);if(!obj)return;
+  if(ref.k==="b"&&obj.lock){shakeCell(ref.i);return;}
+  snapshot();obj.o=(obj.o+1)%4;render();
+}
+function shakeCell(i){
+  const el=document.querySelector(`[data-cell="${i}"] .tile`);
+  if(el){el.classList.add("shake");setTimeout(()=>el.classList.remove("shake"),300);}
+  toast("Burned into the tape");
+}
+
+document.addEventListener("pointerdown",e=>{
+  const grim=e.target.closest?.("[data-grim]");
+  if(grim){e.preventDefault();foundGrimble();return;}
+  const el=e.target.closest?.(".tile");
+  if(!el)return;
+  if(el.dataset.locked==="1"){const ref=getRef(el);shakeCell(ref.i);return;}
+  drag={x0:e.clientX,y0:e.clientY,el,ref:getRef(el),moved:false};
+});
+window.addEventListener("pointermove",e=>{
+  if(!drag)return;
+  if(!drag.moved&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<8)return;
+  if(!drag.moved){
+    drag.moved=true;drag.el.classList.add("lift");
+    const obj=tileAt(drag.ref);
+    ghost.innerHTML=tileSVG(P.tiles[obj.t],obj.o,{});
+    ghost.classList.remove("hidden");
+  }
+  ghost.style.left=e.clientX+"px";ghost.style.top=e.clientY+"px";
+  document.querySelectorAll(".cell.drop").forEach(n=>n.classList.remove("drop"));
+  const under=document.elementFromPoint(e.clientX,e.clientY);
+  const cell=under&&under.closest?.("[data-cell]");
+  if(cell&&!(board[+cell.dataset.cell]&&board[+cell.dataset.cell].lock))cell.classList.add("drop");
+});
+window.addEventListener("pointerup",e=>{
+  if(!drag)return;
+  const d=drag;drag=null;
+  ghost.classList.add("hidden");d.el.classList.remove("lift");
+  document.querySelectorAll(".cell.drop").forEach(n=>n.classList.remove("drop"));
+  if(d.moved){
+    const under=document.elementFromPoint(e.clientX,e.clientY);
+    const cell=under&&under.closest?.("[data-cell]");
+    if(cell){place(d.ref,parseInt(cell.dataset.cell,10));return;}
+    if(under&&under.closest?.("#trayWrap")){toTray(d.ref);return;}
+    render();return;
+  }
+  // tap
+  const ref=d.ref;
+  if(sel&&sel.k===ref.k&&sel.i===ref.i){
+    if(P.rot)rotate(ref);else{sel=null;render();}
+    return;
+  }
+  if(sel){
+    if(ref.k==="b")place(sel,ref.i);
+    else{ if(sel.k==="b")toTray(sel); else {sel={...ref};render();} }
+    return;
+  }
+  sel={...ref};render();
+});
+document.addEventListener("pointerdown",e=>{
+  if(e.target.closest?.(".tile")||e.target.closest?.("button"))return;
+  if(sel){sel=null;render();}
+},true);
+window.addEventListener("keydown",e=>{
+  if(document.querySelector(".ov:not([hidden])"))return;
+  if(e.key==="r"||e.key==="R"){if(sel)rotate(sel);}
+  if(e.key==="z"||e.key==="Z"||e.key==="u")undo();
+  if(e.key==="Escape"){sel=null;render();}
+});
+
+/* ---------- tracking hint ---------- */
+function hint(){
+  const {W,H}=P;
+  // the proven-unique pattern is the home layout; find a cell not yet matching it
+  const wrong=[];
+  for(let cell=0;cell<W*H;cell++){
+    const b=board[cell];if(b&&b.lock)continue;
+    const want=P.tiles[P.cellToTile[cell]];
+    if(!b||JSON.stringify(want.e)!==JSON.stringify([0,1,2,3].map(s=>edgeAt(P.tiles[b.t],b.o,s))))wrong.push(cell);
+  }
+  if(!wrong.length){toast("Signal is already clean");return;}
+  const empty=wrong.filter(c=>!board[c]);
+  const cell=(empty.length?empty:wrong)[0];
+  const tid=P.cellToTile[cell];
+  snapshot();
+  // pull that tile from wherever it is
+  const ti=tray.findIndex(x=>x.t===tid);
+  if(ti>=0)tray.splice(ti,1);
+  else{const bi=board.findIndex(b=>b&&b.t===tid);if(bi>=0)board[bi]=null;}
+  const occ=board[cell];
+  if(occ&&!occ.lock)tray.push({t:occ.t,o:occ.o});
+  board[cell]={t:tid,o:0,lock:true};
+  hintsUsed++;sel=null;render();
+  toast("Tracking locked one frame");
+}
+
+/* ---------- grimble ---------- */
+function foundGrimble(){
+  if(grimFound)return;
+  grimFound=true;
+  SAVE.grimbles=SAVE.grimbles||[];
+  if(!SAVE.grimbles.includes(L.n)){SAVE.grimbles.push(L.n);Store.set("midnight-slot",SAVE);}
+  toast("Grimble located");render();
+}
+
+/* ---------- toast ---------- */
+let toastT=null;
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("on");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),1500);}
+
+/* ============================================================
+   RESOLVE ART
+   ============================================================ */
+const A={s:'stroke="#ded4bb" fill="none" stroke-width="2"'};
+function art(n){
+  const g=SIGNAL[1].hex,br=SIGNAL[2].hex,ch=SIGNAL[3].hex,pr=SIGNAL[4].hex,co=SIGNAL[5].hex,su=SIGNAL[6].hex;
+  const bg='<rect width="200" height="200" fill="#0a0b0c"/>';
+  const S=s=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">${bg}${s}</svg>`;
+  switch(n){
+   case 1: return S(`
+     <circle cx="100" cy="100" r="72" fill="none" stroke="${ch}" stroke-width="2"/>
+     <rect x="28" y="46" width="144" height="14" fill="${pr}"/><rect x="28" y="60" width="144" height="14" fill="${su}"/>
+     <rect x="28" y="74" width="144" height="14" fill="${g}"/><rect x="28" y="88" width="144" height="14" fill="${co}"/>
+     <rect x="28" y="102" width="144" height="14" fill="${br}"/>
+     <ellipse cx="100" cy="134" rx="34" ry="19" fill="#0a0b0c" stroke="${ch}" stroke-width="2"/>
+     <circle cx="100" cy="134" r="8" fill="${ch}"/><circle cx="100" cy="134" r="3.5" fill="#0a0b0c"/>
+     <path d="M14 168 h172" stroke="${ch}" stroke-width="1" opacity=".5"/>`);
+   case 2: return S(`
+     <path d="M46 96 h108 a8 8 0 0 1 -8 46 h-92 a8 8 0 0 1 -8 -46z" fill="${ch}"/>
+     <ellipse cx="100" cy="96" rx="54" ry="12" fill="${br}"/>
+     <path d="M84 84 q-10 -18 2 -30 q10 -12 0 -26 M100 82 q-12 -20 0 -34 q10 -12 2 -24 M116 84 q-10 -18 2 -30 q10 -12 0 -26" ${A.s} opacity=".85"/>
+     <rect x="150" y="40" width="34" height="118" fill="none" stroke="${ch}" stroke-width="2"/>
+     <circle cx="157" cy="100" r="3" fill="${su}"/>
+     <path d="M150 158 l34 0" stroke="${pr}" stroke-width="3"/>`);
+   case 3: return S(`
+     <circle cx="66" cy="92" r="26" fill="none" stroke="${ch}" stroke-width="2"/>
+     <path d="M52 118 q14 22 28 0 l10 52 h-48z" fill="${ch}" opacity=".55"/>
+     <g transform="rotate(24 138 96)">
+       <circle cx="138" cy="96" r="24" fill="none" stroke="${g}" stroke-width="2"/>
+       <path d="M124 120 q14 20 28 0 l8 50 h-44z" fill="${g}" opacity=".5"/></g>
+     <path d="M92 88 q16 -8 26 2" stroke="${su}" stroke-width="1.5" fill="none" stroke-dasharray="3 4"/>
+     <ellipse cx="106" cy="70" rx="26" ry="15" fill="none" stroke="${su}" stroke-width="1.5"/>
+     <path d="M92 82 l6 -4" stroke="${su}" stroke-width="1.5"/>`);
+   case 4: return S(`
+     <g stroke="${br}" stroke-width="1.5">
+       ${[0,1,2,3,4,5].map(i=>`<path d="M0 ${104+i*18} h200"/>`).join("")}
+     </g>
+     <path d="M62 200 L84 96 L134 96 L156 200z" fill="${su}" opacity=".22"/>
+     <rect x="84" y="70" width="50" height="30" fill="#05060a"/>
+     <rect x="84" y="70" width="50" height="30" fill="none" stroke="${br}" stroke-width="2"/>
+     <path d="M108 100 q6 8 2 16 q-4 8 4 12" stroke="${g}" stroke-width="2" fill="none"/>
+     <path d="M114 128 l4 -3 l3 4 l4 -4 l3 5" stroke="${g}" stroke-width="2" fill="none"/>
+     <circle cx="98" cy="82" r="2.5" fill="${pr}"/><circle cx="120" cy="82" r="2.5" fill="${pr}"/>`);
+   case 5: return S(`
+     <path d="M18 150 h164 M18 128 h164 M18 106 h164" stroke="${ch}" stroke-width="2"/>
+     <path d="M18 96 v66 M182 96 v66" stroke="${ch}" stroke-width="4"/>
+     <rect x="12" y="160" width="176" height="10" fill="${br}"/>
+     <g transform="translate(86 108)">
+       <path d="M0 0 l26 0 l-4 34 l-18 0z" fill="${pr}"/>
+       <path d="M2 34 l-6 22 M24 34 l6 22 M0 12 l-14 -22 M26 12 l14 -22" stroke="${pr}" stroke-width="3"/>
+     </g>
+     <ellipse cx="100" cy="176" rx="58" ry="7" fill="${su}" opacity=".3"/>
+     <path d="M100 176 L184 196" stroke="${su}" stroke-width="10" opacity=".22"/>
+     <circle cx="100" cy="30" r="14" fill="${su}" opacity=".55"/>`);
+   case 6: return S(`
+     <path d="M18 96 h58" stroke="${ch}" stroke-width="2"/>
+     <path d="M100 52 L142 128 L58 128z" fill="none" stroke="${ch}" stroke-width="2"/>
+     ${[pr,su,g,ch,co,br].map((c,i)=>`<path d="M104 100 L196 ${112+i*13}" stroke="${c}" stroke-width="5"/>`).join("")}
+     <ellipse cx="52" cy="46" rx="24" ry="11" fill="${br}" opacity=".8"/>
+     <path d="M30 48 q-6 4 0 8 M74 48 q6 4 0 8" stroke="${br}" stroke-width="2" fill="none"/>
+     <path d="M52 57 v22" stroke="${br}" stroke-width="1" stroke-dasharray="2 3"/>
+     <rect x="12" y="176" width="176" height="4" fill="${ch}" opacity=".4"/>`);
+   case 7: return S(`
+     <path d="M46 20 v168" stroke="${ch}" stroke-width="4"/>
+     <path d="M46 26 h112 v72 h-112z" fill="${co}"/>
+     <path d="M46 26 h112 v24 h-112z" fill="${pr}"/>
+     <path d="M46 74 h112 v24 h-112z" fill="${su}"/>
+     <circle cx="102" cy="62" r="20" fill="#0a0b0c"/>
+     <path d="M46 98 q30 12 56 0 q26 -12 56 0" fill="none" stroke="${ch}" stroke-width="1" opacity=".4"/>
+     <path d="M10 150 h180" stroke="${br}" stroke-width="2"/>
+     <path d="M10 150 q40 -14 80 0 q40 14 100 0" fill="none" stroke="${br}" stroke-width="1" opacity=".5"/>
+     <circle cx="46" cy="18" r="4" fill="${g}"/>`);
+   case 8: return S(`
+     <rect x="10" y="150" width="180" height="46" fill="${br}" opacity=".35"/>
+     <path d="M28 150 v-56 h18 v56z M62 150 v-40 h14 v40z M150 150 v-64 h20 v64z" fill="#05060a" stroke="${br}" stroke-width="1.5"/>
+     <path d="M34 92 q-8 -22 4 -34 M158 84 q-10 -26 2 -38" stroke="${ch}" stroke-width="2" fill="none" opacity=".5"/>
+     <circle cx="112" cy="46" r="17" fill="${ch}" opacity=".85"/><circle cx="105" cy="42" r="15" fill="#0a0b0c"/>
+     <rect x="70" y="96" width="66" height="48" rx="5" fill="none" stroke="${ch}" stroke-width="2"/>
+     <circle cx="103" cy="120" r="3.5" fill="${g}"/>
+     <path d="M70 120 h22 M114 120 h22" stroke="${g}" stroke-width="1" opacity=".6"/>`);
+   default: return S(`
+     <g transform="translate(100 100) scale(3.6) translate(-20 -20)">${grimbleSVG().replace(/<\/?svg[^>]*>/g,"")}</g>
+     <path d="M10 178 h180" stroke="${g}" stroke-width="2" opacity=".5"/>`);
+  }
+}
+
+/* ============================================================
+   FLOW
+   ============================================================ */
+const el=id=>document.getElementById(id);
+function show(id){["ovMenu","ovCard","ovWin"].forEach(x=>el(x).hidden=(x!==id));
+  const playing=(id===null);
+  el("game").hidden=!playing;el("bar").hidden=!playing;}
+function showGame(){["ovMenu","ovCard","ovWin"].forEach(x=>el(x).hidden=true);el("game").hidden=false;el("bar").hidden=false;}
+
+let pendingLevel=null;
+function openCard(lv){
+  pendingLevel=lv;
+  el("cardNo").textContent=lv.secret?"Unlisted slot":"Slot "+String(lv.n).padStart(2,"0");
+  el("cardTitle").textContent=lv.title;
+  el("cardTag").textContent=lv.tag;
+  const bits=[`${lv.W}×${lv.H} frames`,`${lv.C} signals`,lv.rot?"rotation live":"rotation locked"];
+  if(lv.sums===1)bits.push("row totals");if(lv.sums===2)bits.push("row + column totals");
+  el("cardMeta").textContent=bits.join("  ·  ");
+  show("ovCard");
+}
+function buildGuide(){
+  const g=el("guide");g.innerHTML="";
+  const solved=SAVE.solved||[],grims=SAVE.grimbles||[];
+  LEVELS.forEach((lv,idx)=>{
+    if(lv.secret&&grims.length<8)return;
+    const unlocked=idx===0||solved.includes(LEVELS[idx-1].n)||lv.secret;
+    const d=document.createElement("div");
+    d.className="gitem"+(unlocked?"":" locked");
+    d.innerHTML=`<div class="gno">${lv.secret?"??":String(lv.n).padStart(2,"0")}</div>
+      <div><div class="gname">${unlocked?lv.title:"▒▒▒▒▒ ▒▒▒▒▒▒"}</div>
+      <div class="gsub">${unlocked?`${lv.W}×${lv.H} · ${lv.C} signals${lv.rot?" · rotation":""}${lv.sums?" · totals":""}`:"tape not yet cued"}</div></div>
+      <div class="gmark">${solved.includes(lv.n)?"RESTORED":""}${grims.includes(lv.n)?" ◉":""}</div>`;
+    if(unlocked)d.onclick=()=>openCard(lv);
+    g.appendChild(d);
+  });
+  el("grimCount").textContent=`Grimbles located: ${grims.length} / 9`;
+}
+function win(){
+  if(el("ovWin").hidden===false)return;
+  const secs=Math.round((Date.now()-startTime)/1000);
+  SAVE.solved=SAVE.solved||[];
+  if(!SAVE.solved.includes(L.n)){SAVE.solved.push(L.n);}
+  Store.set("midnight-slot",SAVE);
+  el("winTitle").textContent=L.title;
+  el("art").innerHTML=art(L.n);
+  el("winCap").textContent=L.cap;
+  const m=Math.floor(secs/60),s=secs%60;
+  el("winStats").textContent=`${m}m ${String(s).padStart(2,"0")}s  ·  tracking used ${hintsUsed}×  ·  grimble ${grimFound?"located":"still out there"}`;
+  const idx=LEVELS.indexOf(L);
+  const nxt=LEVELS[idx+1];
+  el("bNext").style.display=(nxt&&!(nxt.secret&&(SAVE.grimbles||[]).length<8))?"":"none";
+  show("ovWin");
+}
+
+el("bPlay").onclick=()=>{showGame();setTimeout(()=>newGame(pendingLevel,pendingLevel.seed),30);};
+el("bBack").onclick=()=>{buildGuide();show("ovMenu");};
+el("bGuide").onclick=()=>{buildGuide();show("ovMenu");};
+el("bMenu2").onclick=()=>{buildGuide();show("ovMenu");};
+el("bNext").onclick=()=>{const i=LEVELS.indexOf(L);pendingLevel=LEVELS[i+1];openCard(pendingLevel);};
+el("bAgain").onclick=()=>{showGame();setTimeout(()=>newGame(L,curSeed+Math.floor(Math.random()*9999)+1),30);};
+el("bRot").onclick=()=>{if(sel)rotate(sel);};
+el("bUndo").onclick=undo;
+el("bReset").onclick=()=>{showGame();newGame(L,curSeed);};
+el("bHint").onclick=hint;
+
+(async function init(){
+  const s=await Store.get("midnight-slot");
+  if(s&&typeof s==="object")SAVE=Object.assign({solved:[],grimbles:[]},s);
+  buildGuide();show("ovMenu");
+})();
+</script>
+</body>
+</html>
